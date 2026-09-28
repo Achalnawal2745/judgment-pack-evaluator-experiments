@@ -19,11 +19,18 @@ earlier exclusion tautological because no glob had ever reached a top-level
 `.md`. A guard that could be defeated by a glob would repeat exactly that defect.
 The manifest is the covered set; anything else is a description of it.
 
+It also checks that each manifest still DESCRIBES its tree: every listed file
+is hashed and compared to its recorded digest. A covered file edited after the
+manifest was written means the pin no longer describes the tree; a covered
+file that is gone means the pin points at nothing. Either fails the run,
+naming the study, the path, and which of the two it is.
+
 Run: python tools/check_freeze_sets.py
 """
 
 from __future__ import annotations
 
+import hashlib
 import pathlib
 import sys
 
@@ -62,6 +69,33 @@ def covered_paths(manifest: pathlib.Path) -> set[str]:
     return covered
 
 
+def manifest_entries(manifest: pathlib.Path) -> list[tuple[str, str]]:
+    """Every (digest, study-relative path) pair a manifest pins.
+
+    Same line grammar as `covered_paths`: "<digest>  <path>", blanks and `#`
+    comments skipped. Kept separate so the covered-set check above stays
+    untouched.
+    """
+    entries = []
+    for line in manifest.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if not line or line.startswith("#"):
+            continue
+        digest, separator, path = line.partition("  ")
+        if separator:
+            entries.append((digest.strip(), path.strip()))
+    return entries
+
+
+def sha256_of(path: pathlib.Path) -> str:
+    """Hex digest of a file's bytes, streamed so large files stay cheap."""
+    digest = hashlib.sha256()
+    with open(path, "rb") as handle:
+        for chunk in iter(lambda: handle.read(65536), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
 def main() -> int:
     problems: list[str] = []
     checked = 0
@@ -83,6 +117,21 @@ def main() -> int:
                 f"anchor that deviation is recorded against. Exclude it by construction "
                 f"and say so, as studies/015-cloudflare-os-boundary does (issue #65)."
             )
+        study_dir = manifest.parent.parent
+        for digest, path in manifest_entries(manifest):
+            target = study_dir / path
+            if not target.is_file():
+                problems.append(
+                    f"{study}: {path} is listed in harness/STUDY-MANIFEST.sha256 "
+                    f"but is missing from the tree. Restore the file or regenerate "
+                    f"the manifest; do not leave the pin pointing at nothing."
+                )
+            elif sha256_of(target) != digest:
+                problems.append(
+                    f"{study}: {path} no longer matches harness/STUDY-MANIFEST.sha256: "
+                    f"the covered file was edited after the manifest was written. "
+                    f"Revert the edit or regenerate the manifest."
+                )
 
     if not checked:
         print("no study manifests found: this guard would pass vacuously", file=sys.stderr)
