@@ -58,6 +58,13 @@ def main():
         os.unlink(facts)
         if evidence:
             os.unlink(evidence)
+    if not rows:
+        print(
+            "refused: corpus ran zero rows; nothing was compared, "
+            "so no agreement can be reported",
+            file=sys.stderr,
+        )
+        return 1
     for cid, ok, gd, pd in rows:
         print(f"{'AGREE' if ok else 'DIFF':7s} {cid}")
         if not ok:
