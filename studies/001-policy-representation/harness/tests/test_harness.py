@@ -1066,3 +1066,163 @@ def test_arm_b_vintage_guard_is_a_no_op_on_a_uniform_or_absent_file(tmp_path):
     with pytest.raises(ValueError) as exc:
         run_mod.assert_uniform_arm_b_vintage(str(stale), "B")
     assert "jps-study-001-result/1" in str(exc.value)
+
+
+# --------------------------------------------------------------------------- #
+# load_results validates rows before scoring
+# --------------------------------------------------------------------------- #
+
+
+def _results_file(tmp_path, name, entries):
+    """Write a JSONL file; dicts are dumped, strings are written as-is."""
+    lines = [e if isinstance(e, str) else json.dumps(e) for e in entries]
+    path = tmp_path / name
+    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    return str(path)
+
+
+def _valid_row(iid="i9", trial=1):
+    return _row(iid, trial, "legal", ["R1"])
+
+
+def test_valid_rows_with_unknown_extra_fields_load(tmp_path):
+    extra = _valid_row()
+    extra["zz_unknown"] = {"anything": [1, "goes"]}
+    twin = _valid_row("p0", 1)
+    twin["row_id"] = "p0__answerable"
+    path = _results_file(tmp_path, "ok.jsonl", ["", extra, "", twin])
+    results = score_mod.load_results([path])
+    assert set(results) == {"A::mock::m"}
+    assert set(results["A::mock::m"]) == {"i9", "p0__answerable"}
+    assert results["A::mock::m"]["i9"][0]["zz_unknown"] == {"anything": [1, "goes"]}
+
+
+@pytest.mark.parametrize(
+    "field,value",
+    [
+        ("arm", None), ("arm", ""), ("arm", 7),
+        ("backend", None), ("backend", ""), ("backend", ["mock"]),
+        ("model", None), ("model", ""), ("model", {"m": 1}),
+    ],
+)
+def test_grouping_fields_must_be_non_empty_strings(tmp_path, field, value):
+    row = _valid_row()
+    row[field] = value
+    path = _results_file(tmp_path, "bad.jsonl", [row])
+    with pytest.raises(ValueError) as exc:
+        score_mod.load_results([path])
+    assert str(path) in str(exc.value)
+    assert "line 1" in str(exc.value)
+
+
+@pytest.mark.parametrize("field", ["arm", "backend", "model"])
+def test_missing_grouping_field_is_rejected(tmp_path, field):
+    row = _valid_row()
+    del row[field]
+    path = _results_file(tmp_path, "bad.jsonl", [row])
+    with pytest.raises(ValueError) as exc:
+        score_mod.load_results([path])
+    assert str(path) in str(exc.value)
+    assert "line 1" in str(exc.value)
+
+
+@pytest.mark.parametrize("schema", ["bogus", "", None])
+def test_unsupported_schema_is_rejected(tmp_path, schema):
+    row = _valid_row()
+    row["schema"] = schema
+    path = _results_file(tmp_path, "bad.jsonl", [row])
+    with pytest.raises(ValueError) as exc:
+        score_mod.load_results([path])
+    assert str(path) in str(exc.value)
+    assert "line 1" in str(exc.value)
+
+
+@pytest.mark.parametrize("raw", ["[1, 2]", '"just a string"', "42", "null"])
+def test_non_object_row_is_rejected(tmp_path, raw):
+    path = _results_file(tmp_path, "bad.jsonl", [raw])
+    with pytest.raises(ValueError) as exc:
+        score_mod.load_results([path])
+    assert str(path) in str(exc.value)
+    assert "line 1" in str(exc.value)
+
+
+def test_truthy_non_string_row_id_is_rejected(tmp_path):
+    row = _valid_row()
+    row["row_id"] = 7
+    path = _results_file(tmp_path, "bad.jsonl", [row])
+    with pytest.raises(ValueError) as exc:
+        score_mod.load_results([path])
+    assert "row_id" in str(exc.value)
+
+
+def test_missing_identity_is_rejected(tmp_path):
+    row = _valid_row()
+    del row["instance_id"]
+    path = _results_file(tmp_path, "bad.jsonl", [row])
+    with pytest.raises(ValueError) as exc:
+        score_mod.load_results([path])
+    assert "row_id" in str(exc.value)
+
+
+def test_empty_fallback_identity_is_rejected(tmp_path):
+    row = _valid_row()
+    row["instance_id"] = ""
+    path = _results_file(tmp_path, "bad.jsonl", [row])
+    with pytest.raises(ValueError):
+        score_mod.load_results([path])
+
+
+def test_empty_or_null_row_id_falls_back_to_instance_id(tmp_path):
+    empty = _valid_row("i9", 1)
+    empty["row_id"] = ""
+    null = _valid_row("i9", 2)
+    null["row_id"] = None
+    path = _results_file(tmp_path, "ok.jsonl", [empty, null])
+    results = score_mod.load_results([path])
+    assert [r["trial"] for r in results["A::mock::m"]["i9"]] == [1, 2]
+
+
+@pytest.mark.parametrize("trial", [True, False, 0, -1, "1", 1.5, None])
+def test_bad_trial_is_rejected(tmp_path, trial):
+    row = _valid_row()
+    row["trial"] = trial
+    path = _results_file(tmp_path, "bad.jsonl", [row])
+    with pytest.raises(ValueError) as exc:
+        score_mod.load_results([path])
+    assert "trial" in str(exc.value)
+    assert str(path) in str(exc.value)
+
+
+def test_duplicate_cell_in_one_file_is_rejected(tmp_path):
+    path = _results_file(tmp_path, "dup.jsonl", [_valid_row(), _valid_row()])
+    with pytest.raises(ValueError) as exc:
+        score_mod.load_results([path])
+    assert "duplicate" in str(exc.value)
+    assert str(path) in str(exc.value)
+    assert "line 2" in str(exc.value)
+
+
+def test_duplicate_cell_across_files_is_rejected(tmp_path):
+    first = _results_file(tmp_path, "a.jsonl", [_valid_row()])
+    second = _results_file(tmp_path, "b.jsonl", [_valid_row()])
+    with pytest.raises(ValueError) as exc:
+        score_mod.load_results([first, second])
+    assert "duplicate" in str(exc.value)
+    assert str(second) in str(exc.value)
+    assert "line 1" in str(exc.value)
+
+
+def test_same_identity_different_trials_is_not_a_duplicate(tmp_path):
+    path = _results_file(tmp_path, "ok.jsonl", [_valid_row("i9", 1), _valid_row("i9", 2)])
+    results = score_mod.load_results([path])
+    assert [r["trial"] for r in results["A::mock::m"]["i9"]] == [1, 2]
+
+
+def test_error_names_the_file_and_line(tmp_path):
+    rows = [_valid_row("i1", 1), _valid_row("i2", 1), _valid_row("i3", 1)]
+    del rows[2]["arm"]
+    path = _results_file(tmp_path, "bad.jsonl", rows)
+    with pytest.raises(ValueError) as exc:
+        score_mod.load_results([path])
+    assert str(path) in str(exc.value)
+    assert "line 3" in str(exc.value)

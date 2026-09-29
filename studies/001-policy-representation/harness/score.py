@@ -5,12 +5,12 @@ WHAT THIS FILE DOES
 -------------------
 ::
 
-    python score.py --instances <dir-or-index.json> --results a.jsonl b.jsonl ... \\
-                    [--baseline "A::mock::mock/deterministic-v1"] \\
-                    [--registered] \\
-                    [--population all|answerable|redacted] \\
-                    [--bootstrap-unit twin|pair] \\
-                    [--out-md report.md] [--out-json report.json] \\
+    python score.py --instances <dir-or-index.json> --results a.jsonl b.jsonl ... \
+                    [--baseline "A::mock::mock/deterministic-v1"] \
+                    [--registered] \
+                    [--population all|answerable|redacted] \
+                    [--bootstrap-unit twin|pair] \
+                    [--out-md report.md] [--out-json report.json] \
                     [--bootstrap 2000] [--seed 20260727]
 
 Reads one or more result files, groups rows into **conditions**
@@ -370,13 +370,63 @@ def condition_key(row: Mapping[str, Any]) -> str:
     return "%s::%s::%s" % (row.get("arm"), row.get("backend"), row.get("model"))
 
 
+RESULT_SCHEMA = "jps-study-001-result/1"
+
+
+def _check_result_row(row: Any, path: str, lineno: int) -> Tuple[str, str, int]:
+    """Validate one decoded JSONL line; return its (condition, identity, trial).
+
+    Identity and grouping fields only: unknown extra fields are allowed, and
+    the scoring fields (``prediction``, ``parse_ok``, ...) are the scorer's
+    business, not the loader's. Every failure names its file and line number.
+    """
+    if not isinstance(row, dict):
+        raise ValueError("%s line %d: result row must be a JSON object" % (path, lineno))
+    if row.get("schema") != RESULT_SCHEMA:
+        raise ValueError(
+            "%s line %d: unsupported schema %r (expected %r)"
+            % (path, lineno, row.get("schema"), RESULT_SCHEMA)
+        )
+    for field in ("arm", "backend", "model"):
+        value = row.get(field)
+        if not isinstance(value, str) or not value:
+            raise ValueError(
+                "%s line %d: %s must be a non-empty string" % (path, lineno, field)
+            )
+    trial = row.get("trial")
+    if isinstance(trial, bool) or not isinstance(trial, int) or trial < 1:
+        raise ValueError("%s line %d: trial must be an integer >= 1" % (path, lineno))
+    rid = row.get("row_id")
+    if not rid:
+        rid = row.get("instance_id")
+        if not isinstance(rid, str) or not rid:
+            raise ValueError(
+                "%s line %d: row_id is absent or empty and instance_id is not "
+                "a non-empty string" % (path, lineno)
+            )
+    elif not isinstance(rid, str):
+        raise ValueError("%s line %d: row_id must be a string" % (path, lineno))
+    return condition_key(row), rid, trial
+
+
 def load_results(paths: Sequence[str]) -> Dict[str, Dict[str, List[Dict[str, Any]]]]:
     """Return ``{condition: {row_id: [rows sorted by trial]}}``.
 
     Rows are keyed by ``row_id`` (``run.py``'s twin-aware identity) and fall back
     to ``instance_id`` for documents that are not twins.
+
+    Every non-empty line is validated before it enters the map: it must decode
+    to an object with schema ``jps-study-001-result/1``, non-empty string
+    ``arm``/``backend``/``model``, an integer ``trial`` of at least 1 (booleans
+    rejected), and a string ``row_id`` -- falling back to a non-empty string
+    ``instance_id`` when ``row_id`` is absent or empty. A repeated ``(arm,
+    backend, model, row identity, trial)`` cell, within one file or across the
+    files of one call, is rejected: it would otherwise fail later with an
+    unclear exception or silently distort the cell. Unknown extra fields are
+    allowed. Every error names its file and line number.
     """
     out: Dict[str, Dict[str, List[Dict[str, Any]]]] = {}
+    seen: set = set()
     for path in paths:
         with open(path, "r", encoding="utf-8") as fh:
             for lineno, line in enumerate(fh, 1):
@@ -387,11 +437,14 @@ def load_results(paths: Sequence[str]) -> Dict[str, Dict[str, List[Dict[str, Any
                     row = json.loads(line)
                 except ValueError as exc:
                     raise ValueError("%s line %d: %s" % (path, lineno, exc))
-                cond = condition_key(row)
-                iid = row.get("row_id") or row.get("instance_id")
-                if not isinstance(iid, str):
-                    raise ValueError("%s line %d: missing row_id/instance_id" % (path, lineno))
-                out.setdefault(cond, {}).setdefault(iid, []).append(row)
+                cond, rid, trial = _check_result_row(row, path, lineno)
+                cell = (row["arm"], row["backend"], row["model"], rid, trial)
+                if cell in seen:
+                    raise ValueError(
+                        "%s line %d: duplicate result cell %r" % (path, lineno, cell)
+                    )
+                seen.add(cell)
+                out.setdefault(cond, {}).setdefault(rid, []).append(row)
     for by_instance in out.values():
         for rows in by_instance.values():
             rows.sort(key=lambda r: r.get("trial", 0))
