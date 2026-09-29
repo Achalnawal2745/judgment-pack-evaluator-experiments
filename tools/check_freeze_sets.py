@@ -25,6 +25,12 @@ manifest was written means the pin no longer describes the tree; a covered
 file that is gone means the pin points at nothing. Either fails the run,
 naming the study, the path, and which of the two it is.
 
+A manifest line the guard cannot read is a problem of its own: a line no
+check covers must not pass silently. Every non-blank, non-comment line has to
+be 64 lowercase hex digits, two spaces, and a path — anything else (a
+one-space separator, a tab, the `*` binary marker) fails the run naming the
+study, the line number, and the line.
+
 Run: python tools/check_freeze_sets.py
 """
 
@@ -32,6 +38,7 @@ from __future__ import annotations
 
 import hashlib
 import pathlib
+import re
 import sys
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
@@ -50,6 +57,8 @@ GRANDFATHERED = {
     "017-witnessed-currency",
     "018-transition-rules",
 }
+
+_DIGEST_RE = re.compile(r"[0-9a-f]{64}")
 
 
 def covered_paths(manifest: pathlib.Path) -> set[str]:
@@ -87,6 +96,26 @@ def manifest_entries(manifest: pathlib.Path) -> list[tuple[str, str]]:
     return entries
 
 
+def unreadable_lines(manifest: pathlib.Path) -> list[tuple[int, str]]:
+    """(line number, line) pairs the guard cannot read.
+
+    A readable line is 64 lowercase hex digits, two spaces, and a path -- the
+    same grammar `covered_paths` and `manifest_entries` parse. Anything else
+    that is not blank or a `#` comment is a line no check covers, so it is
+    reported rather than silently skipped. Line numbers count every physical
+    line so the report points at the file as written.
+    """
+    bad = []
+    for lineno, raw in enumerate(manifest.read_text(encoding="utf-8").splitlines(), start=1):
+        line = raw.strip()
+        if not line or line.startswith("#"):
+            continue
+        digest, separator, path = line.partition("  ")
+        if not separator or not path.strip() or _DIGEST_RE.fullmatch(digest.strip()) is None:
+            bad.append((lineno, line))
+    return bad
+
+
 def sha256_of(path: pathlib.Path) -> str:
     """Hex digest of a file's bytes, streamed so large files stay cheap."""
     digest = hashlib.sha256()
@@ -104,6 +133,13 @@ def main() -> int:
     for manifest in sorted(STUDIES.glob("*/harness/STUDY-MANIFEST.sha256")):
         study = manifest.parent.parent.name
         checked += 1
+        for lineno, text in unreadable_lines(manifest):
+            problems.append(
+                f"{study}: harness/STUDY-MANIFEST.sha256 line {lineno} is not "
+                f"a '<digest>  <path>' line the guard can read: {text!r}. A line "
+                f"the guard cannot parse is a line no check covers; write it as "
+                f"64 lowercase hex digits, two spaces, and the study-relative path."
+            )
         covered = covered_paths(manifest)
         for name in APPEND_AFTER_FREEZE:
             if name not in covered:
