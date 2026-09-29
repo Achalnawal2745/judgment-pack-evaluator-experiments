@@ -9,6 +9,8 @@ tests pin the op semantics a clean-room second implementation must match.
 import json
 import glob
 import os
+import subprocess
+import sys
 import unittest
 
 import derive
@@ -131,6 +133,132 @@ class Errors(unittest.TestCase):
              "claim": {"facts": [{"pointer": "/f", "from": "/x"}], "acquisitionStatus": "resolved"},
              "reason": "r"}]}
         self._reject(rule, {"x": 1.5})  # a float copied into the claim
+
+
+class AgreementInterface(unittest.TestCase):
+    """The command contract SPEC.md's Agreement interface states, pinned by
+    driving derive_cli.py as a subprocess.
+
+    The agreement harness diffs stdout and exit status across implementations,
+    so this is the shape a second implementation is judged against: the exact
+    canon bytes and exit 0 on success; empty stdout and nonzero exit on any
+    rejection. `derive.derive()` is only the oracle for the success bytes.
+    """
+
+    RULE = {
+        "ruleVersion": "1",
+        "clauses": [
+            {"when": {"op": "always"},
+             "claim": {"facts": [{"pointer": "/f", "from": "/x"}],
+                       "evidence": {},
+                       "acquisitionStatus": "resolved"},
+             "reason": "r"}
+        ],
+    }
+    ARTIFACT = {"x": 1}
+    # The marker is swapped for the raw 6-character JSON escape for U+D800
+    # after serialization, so the JSON text carries a lone surrogate no
+    # normally serialized corpus file could hold.
+    MARKER = "LONESURROGATEMARKER"
+
+    def _run(self, raw):
+        return subprocess.run(
+            [sys.executable, "derive_cli.py"],
+            input=raw,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            cwd=HERE,
+        )
+
+    def _request(self, request):
+        return self._run(json.dumps(request).encode("utf-8"))
+
+    def _request_with_surrogate(self, request):
+        text = json.dumps(request).replace(self.MARKER, "\\ud800")
+        self.assertIn("\\ud800", text)  # the escape really made it into the text
+        return self._run(text.encode("utf-8"))
+
+    def test_derivable_request_writes_exact_canon_bytes(self):
+        params = {"tag": "via-cli"}
+        expected = derive.canon(derive.derive(self.RULE, self.ARTIFACT, params))
+        proc = self._request({"rule": self.RULE, "artifact": self.ARTIFACT, "params": params})
+        self.assertEqual(0, proc.returncode)
+        self.assertEqual(expected, proc.stdout)
+        self.assertFalse(proc.stdout.endswith(b"\n"))
+
+    def test_omitted_params_defaults_to_empty(self):
+        omitted = self._request({"rule": self.RULE, "artifact": self.ARTIFACT})
+        explicit = self._request({"rule": self.RULE, "artifact": self.ARTIFACT, "params": {}})
+        self.assertEqual(0, omitted.returncode)
+        self.assertEqual(0, explicit.returncode)
+        self.assertEqual(explicit.stdout, omitted.stdout)
+        self.assertEqual(
+            derive.canon(derive.derive(self.RULE, self.ARTIFACT, {})), omitted.stdout
+        )
+
+    def test_errors_rejection_exits_nonzero_with_empty_stdout(self):
+        # The matched claim's `from` resolves to absent: SPEC Errors rejects it.
+        proc = self._request({"rule": self.RULE, "artifact": {}})
+        self.assertNotEqual(0, proc.returncode)
+        self.assertEqual(b"", proc.stdout)
+
+    def test_request_without_rule_rejects(self):
+        proc = self._request({"artifact": self.ARTIFACT})
+        self.assertNotEqual(0, proc.returncode)
+        self.assertEqual(b"", proc.stdout)
+
+    def test_request_without_artifact_rejects(self):
+        proc = self._request({"rule": self.RULE})
+        self.assertNotEqual(0, proc.returncode)
+        self.assertEqual(b"", proc.stdout)
+
+    def test_non_object_request_rejects(self):
+        for raw in (b"[1, 2]", b'"just a string"', b"42", b"null"):
+            with self.subTest(raw=raw):
+                proc = self._run(raw)
+                self.assertNotEqual(0, proc.returncode)
+                self.assertEqual(b"", proc.stdout)
+
+    def test_malformed_json_rejects(self):
+        for raw in (b"{not json", b""):
+            with self.subTest(raw=raw):
+                proc = self._run(raw)
+                self.assertNotEqual(0, proc.returncode)
+                self.assertEqual(b"", proc.stdout)
+
+    def test_lone_surrogate_in_string_value_rejects(self):
+        request = {"rule": self.RULE, "artifact": {"x": 1, "note": self.MARKER}}
+        proc = self._request_with_surrogate(request)
+        self.assertNotEqual(0, proc.returncode)
+        self.assertEqual(b"", proc.stdout)
+
+    def test_lone_surrogate_in_member_name_rejects(self):
+        request = {"rule": self.RULE, "artifact": {self.MARKER: "v", "x": 1}}
+        proc = self._request_with_surrogate(request)
+        self.assertNotEqual(0, proc.returncode)
+        self.assertEqual(b"", proc.stdout)
+
+    def test_lone_surrogate_in_params_rejects(self):
+        request = {"rule": self.RULE, "artifact": self.ARTIFACT, "params": {"p": self.MARKER}}
+        proc = self._request_with_surrogate(request)
+        self.assertNotEqual(0, proc.returncode)
+        self.assertEqual(b"", proc.stdout)
+
+    def test_canon_rejects_lone_surrogate_directly(self):
+        with self.assertRaises(derive.RuleError):
+            derive.canon("ok" + chr(0xD800) + "bad")
+
+    def test_float_no_claim_copies_derives(self):
+        artifact = {"x": 1, "other": 1.5}
+        expected = derive.canon(derive.derive(self.RULE, artifact, {}))
+        proc = self._request({"rule": self.RULE, "artifact": artifact})
+        self.assertEqual(0, proc.returncode)
+        self.assertEqual(expected, proc.stdout)
+
+    def test_float_copied_into_claim_rejects(self):
+        proc = self._request({"rule": self.RULE, "artifact": {"x": 1.5}})
+        self.assertNotEqual(0, proc.returncode)
+        self.assertEqual(b"", proc.stdout)
 
 
 if __name__ == "__main__":
