@@ -21,6 +21,9 @@ jobs:
           python-version: "3.12"
       - name: Check every study's freeze set
         run: python tools/check_freeze_sets.py
+      - name: Test the freeze-set guard
+        working-directory: tools
+        run: python -m unittest test_check_freeze_sets -v
 
   standalone-components:
     name: Deterministic standalone components
