@@ -132,6 +132,36 @@ class Gate(unittest.TestCase):
         with self.assertRaises(gate.GateError):
             gate.admit(self.store_dir, KEY, self.session, 0, RULE, PARAMS, AUTHORITY)
 
+    # --- the gate passes the caller's authority on, and asks for what is there ---
+
+    def test_acquisition_under_another_authority_is_refused(self):
+        # The receipt is stamped under AUTHORITY but admitted with a different
+        # expected_authority. The gate must pass the argument to the verifier:
+        # drop it and this found-clear record would admit its matchCount fact.
+        idx = self.acquire(FOUND_CLEAR)
+        with self.assertRaises(gate.GateError) as raised:
+            gate.admit(self.store_dir, KEY, self.session, idx, RULE, PARAMS,
+                       "acquisition-proxy:other")
+        self.assertIn("authority-mismatch", str(raised.exception))
+
+    def test_call_index_the_session_does_not_have_is_refused(self):
+        # The store verifies; the named acquisition simply is not there. The
+        # gate's own refusal names it, rather than escaping a bare OSError.
+        idx = self.acquire(FOUND_CLEAR)
+        with self.assertRaises(gate.GateError) as raised:
+            gate.admit(self.store_dir, KEY, self.session, idx + 1, RULE, PARAMS, AUTHORITY)
+        self.assertIn("no attested acquisition", str(raised.exception))
+
+    def test_store_with_no_receipts_is_refused_by_the_gate(self):
+        # An empty receipts directory verifies vacuously true: the verifier
+        # cannot refuse what was never expected. The gate therefore confirms
+        # the acquisition is present, and refuses the same way as above.
+        ok, _findings = attest.verify(self.store_dir, KEY, AUTHORITY)
+        self.assertTrue(ok)
+        with self.assertRaises(gate.GateError) as raised:
+            gate.admit(self.store_dir, KEY, self.session, 0, RULE, PARAMS, AUTHORITY)
+        self.assertIn("no attested acquisition", str(raised.exception))
+
     def test_baseline_contrast_ungated_admits_the_fabrication(self):
         # The study-005 world for contrast: when the model authors the facts
         # document, a fabricated matchCount for a not_found acquisition is
