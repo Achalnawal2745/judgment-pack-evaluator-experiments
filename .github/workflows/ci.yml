@@ -84,7 +84,7 @@ jobs:
       # first, so an expectation cannot be edited in place to make the comparison pass.
       - name: Hold the vendored staged rows to their digests, and test the error-class driver
         working-directory: harness
-        run: python3 -m unittest test_error_class_agreement -v
+        run: python3 -m unittest test_error_class_agreement test_class_agreement -v
       - name: Compare both evaluators' §8.4 error classes over the staged rows
         run: python3 harness/error_class_agreement.py ./jpack python
       # Draft RFC 0016, outcome values. The rows are the cases that RFC lists, each with the
