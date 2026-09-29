@@ -62,7 +62,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: Judgment-Pack/judgment-pack-runtime
-          ref: 2cc4f0403a32e5880a2f1712c511892eda39d0c9
+          ref: f98d4c966e1cfc0f7b27a46310f2aaac20779792
           path: .runtime
       - name: Set up Go
         uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
@@ -87,13 +87,16 @@ jobs:
         run: python3 -m unittest test_error_class_agreement -v
       - name: Compare both evaluators' §8.4 error classes over the staged rows
         run: python3 harness/error_class_agreement.py ./jpack python
-      # The draft RFC 0016 comparison is not run here yet. The pinned runtime is older than the
-      # prototype, so the pinned binary has no such flag, and the pin is not moved in the commit
-      # that adds rows. What is held here needs neither evaluator: the driver's verdicts, and the
-      # rows' expected answers against the script that writes them.
+      # Draft RFC 0016, outcome values. The rows are the cases that RFC lists, each with the
+      # answer its text gives, and both implementations are run under their opt-in. This is
+      # agreement evidence about a draft and not a corpus result. The driver's verdicts and the
+      # rows' expected answers are held first, against the script that writes them, so that an
+      # expectation cannot be edited in place to make the comparison pass.
       - name: Test the draft RFC 0016 driver and hold its rows to the script that writes them
         working-directory: harness
         run: python3 -m unittest test_rfc0016_harness -v
+      - name: Compare both evaluators over draft RFC 0016's rows
+        run: python3 harness/rfc0016_harness.py ./jpack python
 
   study-001-harness:
     name: Study 001 · deterministic harness

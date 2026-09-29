@@ -108,12 +108,10 @@ RFC permits. An input near either implementation's limit is not portable between
 
 ## What this run is not
 
-- It is not in this repository's CI yet. CI builds the Go runtime from a pinned commit, and the
-  pinned commit is older than the prototype and has no such flag. The driver's own logic and the
-  rows' expected answers are tested in CI by `test_rfc0016_harness.py`, which needs neither
-  evaluator. The comparison joins CI when the pin is moved to a commit that carries the flag,
-  which is a change of its own: this repository does not move the pin in the commit that adds
-  rows.
+- It is not a corpus result. It runs in this repository's CI, against the Go runtime at the
+  commit CI pins, `f98d4c9`, after `test_rfc0016_harness.py` has held the driver's verdicts and
+  the rows' expected answers. The pin was moved to that commit in a change of its own, after the
+  rows were merged: this repository does not move the pin in the commit that adds rows.
 - It is not independent evidence, for the reason given at the top.
 - It says nothing about whether outcome values should be an extension or a member of Core. The
   semantics are the same in both forms, and both implementations built the extension form.
