@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Writes rfc0016_cases.json: the cases the Conformance section of draft RFC 0016
-(outcome values) lists, one row each, with the answer the RFC's text gives.
+(outcome values) lists, one row each, and the cases of its Examples, with the answer the
+RFC's text gives.
 
 Every row carries its own pack, because the rows differ in the declaration under
 test. A pack or a facts document is carried as JSON text, not as a value, so
@@ -221,10 +222,11 @@ row("adversarial-another-outcome-unresolvable",
     BOTH, outcome("approve", {"currency": "CAD", "refundAmount": "149.50"}))
 
 # --- The RFC's own examples -----------------------------------------------------------
+GOOD_STANDING = ('[{"id": "good-standing", "description": "A customer in good standing is refunded.", "when": {"op": "fact", '
+                 '"path": "/customer/goodStanding", "operator": "equals", "value": true}, "outcome": "approve-refund", '
+                 '"onUnknown": "ignore"}]')
 PASS_THROUGH = pack("[" + declaring("approve-refund", EXAMPLE) + ", " + plain("decline") + "]",
-                    rules='[{"id": "good-standing", "description": "A customer in good standing is refunded.", "when": {"op": "fact", '
-                          '"path": "/customer/goodStanding", "operator": "equals", "value": true}, "outcome": "approve-refund", '
-                          '"onUnknown": "ignore"}]', required=None)
+                    rules=GOOD_STANDING, required=None)
 row("example-pass-through", "Examples, pass-through: the facts supply the amount",
     PASS_THROUGH, '{"customer": {"goodStanding": true}, "proposed": {"refundAmount": "149.50"}}',
     {"disposition": '{"handoff":{"state":"none"},"kind":"outcome","outcomeId":"approve-refund","reasons":[],"value":{"currency":"CAD","refundAmount":"149.50"}}'},
@@ -241,10 +243,54 @@ TIER_RULES = ('[{"id": "high", "description": "A score of 720 or more.", "when":
               '{"op": "fact", "path": "/score", "operator": "greater-than-or-equal", "value": "650"}, '
               '{"op": "fact", "path": "/score", "operator": "less-than", "value": "720"}]}, "outcome": "limit-standard", '
               '"onUnknown": "escalate"}]')
+# The same pack without the declaration and without its entry in
+# metadata.requiredExtensions, which leaves the pack no metadata. It is a pack of Core's, and
+# is run as one: with neither opt-in.
+UNDECLARED = pack("[" + plain("approve-refund") + ", " + plain("decline") + "]", rules=GOOD_STANDING, required="-")
+CORE = ("The pack carries no declaration and does not list the extension, so it is a pack Core admits "
+        "today, and the row is run with neither opt-in.")
+row("example-pass-through-undeclared-amount-absent",
+    "Examples, pass-through: the same pack without the declaration and without its entry in "
+    "metadata.requiredExtensions, /proposed/refundAmount absent",
+    UNDECLARED, '{"customer": {"goodStanding": true}}', outcome("approve-refund"), opt_in=False, note=CORE)
+row("example-pass-through-undeclared-amount-a-number",
+    "Examples, pass-through: the same pack without the declaration and without its entry in "
+    "metadata.requiredExtensions, /proposed/refundAmount given as the JSON number 149.5",
+    UNDECLARED, '{"customer": {"goodStanding": true}, "proposed": {"refundAmount": 149.5}}',
+    outcome("approve-refund"), opt_in=False, note=CORE)
+row("example-tiers-high", "Examples, tiers: the rules produce limit-high",
+    pack(TIERS, rules=TIER_RULES, more='"fallbackOutcome": "decline",'), '{"score": "750"}', outcome("limit-high", {"creditLimit": "10000"}),
+    note="The RFC states the answer for limit-standard and for decline. This is the third outcome of the same pack, "
+         "by the same rule.")
 row("example-tiers-standard", "Examples, tiers: the rules produce limit-standard",
     pack(TIERS, rules=TIER_RULES, more='"fallbackOutcome": "decline",'), '{"score": "700"}', outcome("limit-standard", {"creditLimit": "5000"}))
 row("example-tiers-decline", "Examples, tiers: the rules produce decline, which carries no value member",
     pack(TIERS, rules=TIER_RULES, more='"fallbackOutcome": "decline",'), '{"score": "600"}', outcome("decline"))
+
+# A calculated quantity. The RFC gives the sentence the pack is written from, the fact, the
+# operand and the declaration, and no pack. The pack here is one reading of it, and what was
+# chosen in writing it is in CHOSEN, which every row of it carries.
+CALCULATED = pack(
+    "[" + declaring("approve-refund", '{"refundAmount": {"type": "decimal", "fromFact": "/refund/amount"}}') + ", "
+    + plain("refer-to-supervisor") + "]",
+    rules='[{"id": "within", "description": "A refund of 500 or less is approved.", "when": {"op": "fact", '
+          '"path": "/refund/amount", "operator": "less-than-or-equal", "value": "500"}, "outcome": "approve-refund", '
+          '"onUnknown": "ignore"}, '
+          '{"id": "above", "description": "A refund above 500 goes to a supervisor.", "when": {"op": "fact", '
+          '"path": "/refund/amount", "operator": "greater-than", "value": "500"}, "outcome": "refer-to-supervisor", '
+          '"onUnknown": "ignore"}]')
+CHOSEN = ("The RFC gives no pack for this example. Chosen in writing one: the value is named refundAmount; "
+          "a refund above 500 is sent to a supervisor by an outcome of its own, refer-to-supervisor, which "
+          "declares nothing, and not by an escalation; a refund of exactly 500 is not above 500 and is "
+          "approved; both rules ignore an unknown.")
+Q = "Examples, a calculated quantity: "
+row("example-calculated-approved", Q + "the calculated amount is 500 or less, and is carried as the fact gives it",
+    CALCULATED, '{"refund": {"amount": "149.50"}}', outcome("approve-refund", {"refundAmount": "149.50"}), note=CHOSEN)
+row("example-calculated-at-the-bound",
+    Q + "the calculated amount is 500 written with two decimal places, which compares as 500 (Core 7.4) and is copied as it was found",
+    CALCULATED, '{"refund": {"amount": "500.00"}}', outcome("approve-refund", {"refundAmount": "500.00"}), note=CHOSEN)
+row("example-calculated-above", Q + "the calculated amount is above 500, and the outcome produced declares nothing",
+    CALCULATED, '{"refund": {"amount": "500.01"}}', outcome("refer-to-supervisor"), note=CHOSEN)
 
 # --- Error rows ---------------------------------------------------------------------------
 X = "Conformance, error rows: "

@@ -76,7 +76,7 @@ its own qualifications.
 - **13/13 semantic agreement** between the Go reference runtime's experimental evaluator
   (v0.2.0) and `python/` on RFC 0006's nine appendix instances plus three probes — identical
   kind, outcome, reason set, and handoff state ([`harness/README.md`](harness/README.md)).
-- **Draft RFC 0016 (outcome values): 60 rows, 56 where both implementations give the RFC's
+- **Draft RFC 0016 (outcome values): 66 rows, 62 where both implementations give the RFC's
   answer**, a disposition byte for byte or an error class. Three more agree with each other and
   not with the RFC, for a reason the RFC's own Compatibility section gives. One differs: what a
   carrier does with an unpaired surrogate, which Core does not say

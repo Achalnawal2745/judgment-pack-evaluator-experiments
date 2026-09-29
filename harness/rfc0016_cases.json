@@ -633,6 +633,42 @@
    "note": null
   },
   {
+   "id": "example-pass-through-undeclared-amount-absent",
+   "origin": "Examples, pass-through: the same pack without the declaration and without its entry in metadata.requiredExtensions, /proposed/refundAmount absent",
+   "optIn": false,
+   "pack": "{\"specVersion\": \"0.2.0-draft\", \"id\": \"https://example.invalid/judgment-packs/rfc0016-row\", \"version\": \"0.1.0\", \"title\": \"Synthetic draft RFC 0016 row\", \"description\": \"Invented content for specification testing; it authorizes nothing.\", \"decision\": {\"intent\": \"Exercise one draft RFC 0016 declaration against one facts document.\", \"question\": \"Is the outcome produced, and with which values?\"},   \"outcomes\": [{\"id\": \"approve-refund\", \"label\": \"An outcome\"}, {\"id\": \"decline\", \"label\": \"An outcome\"}], \"rules\": [{\"id\": \"good-standing\", \"description\": \"A customer in good standing is refunded.\", \"when\": {\"op\": \"fact\", \"path\": \"/customer/goodStanding\", \"operator\": \"equals\", \"value\": true}, \"outcome\": \"approve-refund\", \"onUnknown\": \"ignore\"}]}",
+   "facts": "{\"customer\": {\"goodStanding\": true}}",
+   "evidenceAvailability": null,
+   "expected": {
+    "disposition": "{\"handoff\":{\"state\":\"none\"},\"kind\":\"outcome\",\"outcomeId\":\"approve-refund\",\"reasons\":[]}"
+   },
+   "note": "The pack carries no declaration and does not list the extension, so it is a pack Core admits today, and the row is run with neither opt-in."
+  },
+  {
+   "id": "example-pass-through-undeclared-amount-a-number",
+   "origin": "Examples, pass-through: the same pack without the declaration and without its entry in metadata.requiredExtensions, /proposed/refundAmount given as the JSON number 149.5",
+   "optIn": false,
+   "pack": "{\"specVersion\": \"0.2.0-draft\", \"id\": \"https://example.invalid/judgment-packs/rfc0016-row\", \"version\": \"0.1.0\", \"title\": \"Synthetic draft RFC 0016 row\", \"description\": \"Invented content for specification testing; it authorizes nothing.\", \"decision\": {\"intent\": \"Exercise one draft RFC 0016 declaration against one facts document.\", \"question\": \"Is the outcome produced, and with which values?\"},   \"outcomes\": [{\"id\": \"approve-refund\", \"label\": \"An outcome\"}, {\"id\": \"decline\", \"label\": \"An outcome\"}], \"rules\": [{\"id\": \"good-standing\", \"description\": \"A customer in good standing is refunded.\", \"when\": {\"op\": \"fact\", \"path\": \"/customer/goodStanding\", \"operator\": \"equals\", \"value\": true}, \"outcome\": \"approve-refund\", \"onUnknown\": \"ignore\"}]}",
+   "facts": "{\"customer\": {\"goodStanding\": true}, \"proposed\": {\"refundAmount\": 149.5}}",
+   "evidenceAvailability": null,
+   "expected": {
+    "disposition": "{\"handoff\":{\"state\":\"none\"},\"kind\":\"outcome\",\"outcomeId\":\"approve-refund\",\"reasons\":[]}"
+   },
+   "note": "The pack carries no declaration and does not list the extension, so it is a pack Core admits today, and the row is run with neither opt-in."
+  },
+  {
+   "id": "example-tiers-high",
+   "origin": "Examples, tiers: the rules produce limit-high",
+   "optIn": true,
+   "pack": "{\"specVersion\": \"0.2.0-draft\", \"id\": \"https://example.invalid/judgment-packs/rfc0016-row\", \"version\": \"0.1.0\", \"title\": \"Synthetic draft RFC 0016 row\", \"description\": \"Invented content for specification testing; it authorizes nothing.\", \"decision\": {\"intent\": \"Exercise one draft RFC 0016 declaration against one facts document.\", \"question\": \"Is the outcome produced, and with which values?\"}, \"metadata\": {\"requiredExtensions\": [\"org.judgmentpack.outcome-values\"]}, \"fallbackOutcome\": \"decline\", \"outcomes\": [{\"id\": \"limit-high\", \"label\": \"An outcome\", \"extensions\": {\"org.judgmentpack.outcome-values\": {\"creditLimit\": {\"type\": \"decimal\", \"constant\": \"10000\"}}}}, {\"id\": \"limit-standard\", \"label\": \"An outcome\", \"extensions\": {\"org.judgmentpack.outcome-values\": {\"creditLimit\": {\"type\": \"decimal\", \"constant\": \"5000\"}}}}, {\"id\": \"decline\", \"label\": \"An outcome\"}], \"rules\": [{\"id\": \"high\", \"description\": \"A score of 720 or more.\", \"when\": {\"op\": \"fact\", \"path\": \"/score\", \"operator\": \"greater-than-or-equal\", \"value\": \"720\"}, \"outcome\": \"limit-high\", \"onUnknown\": \"escalate\"}, {\"id\": \"standard\", \"description\": \"A score of 650 to 719.\", \"when\": {\"op\": \"all\", \"conditions\": [{\"op\": \"fact\", \"path\": \"/score\", \"operator\": \"greater-than-or-equal\", \"value\": \"650\"}, {\"op\": \"fact\", \"path\": \"/score\", \"operator\": \"less-than\", \"value\": \"720\"}]}, \"outcome\": \"limit-standard\", \"onUnknown\": \"escalate\"}]}",
+   "facts": "{\"score\": \"750\"}",
+   "evidenceAvailability": null,
+   "expected": {
+    "disposition": "{\"handoff\":{\"state\":\"none\"},\"kind\":\"outcome\",\"outcomeId\":\"limit-high\",\"reasons\":[],\"value\":{\"creditLimit\":\"10000\"}}"
+   },
+   "note": "The RFC states the answer for limit-standard and for decline. This is the third outcome of the same pack, by the same rule."
+  },
+  {
    "id": "example-tiers-standard",
    "origin": "Examples, tiers: the rules produce limit-standard",
    "optIn": true,
@@ -655,6 +691,42 @@
     "disposition": "{\"handoff\":{\"state\":\"none\"},\"kind\":\"outcome\",\"outcomeId\":\"decline\",\"reasons\":[]}"
    },
    "note": null
+  },
+  {
+   "id": "example-calculated-approved",
+   "origin": "Examples, a calculated quantity: the calculated amount is 500 or less, and is carried as the fact gives it",
+   "optIn": true,
+   "pack": "{\"specVersion\": \"0.2.0-draft\", \"id\": \"https://example.invalid/judgment-packs/rfc0016-row\", \"version\": \"0.1.0\", \"title\": \"Synthetic draft RFC 0016 row\", \"description\": \"Invented content for specification testing; it authorizes nothing.\", \"decision\": {\"intent\": \"Exercise one draft RFC 0016 declaration against one facts document.\", \"question\": \"Is the outcome produced, and with which values?\"}, \"metadata\": {\"requiredExtensions\": [\"org.judgmentpack.outcome-values\"]},  \"outcomes\": [{\"id\": \"approve-refund\", \"label\": \"An outcome\", \"extensions\": {\"org.judgmentpack.outcome-values\": {\"refundAmount\": {\"type\": \"decimal\", \"fromFact\": \"/refund/amount\"}}}}, {\"id\": \"refer-to-supervisor\", \"label\": \"An outcome\"}], \"rules\": [{\"id\": \"within\", \"description\": \"A refund of 500 or less is approved.\", \"when\": {\"op\": \"fact\", \"path\": \"/refund/amount\", \"operator\": \"less-than-or-equal\", \"value\": \"500\"}, \"outcome\": \"approve-refund\", \"onUnknown\": \"ignore\"}, {\"id\": \"above\", \"description\": \"A refund above 500 goes to a supervisor.\", \"when\": {\"op\": \"fact\", \"path\": \"/refund/amount\", \"operator\": \"greater-than\", \"value\": \"500\"}, \"outcome\": \"refer-to-supervisor\", \"onUnknown\": \"ignore\"}]}",
+   "facts": "{\"refund\": {\"amount\": \"149.50\"}}",
+   "evidenceAvailability": null,
+   "expected": {
+    "disposition": "{\"handoff\":{\"state\":\"none\"},\"kind\":\"outcome\",\"outcomeId\":\"approve-refund\",\"reasons\":[],\"value\":{\"refundAmount\":\"149.50\"}}"
+   },
+   "note": "The RFC gives no pack for this example. Chosen in writing one: the value is named refundAmount; a refund above 500 is sent to a supervisor by an outcome of its own, refer-to-supervisor, which declares nothing, and not by an escalation; a refund of exactly 500 is not above 500 and is approved; both rules ignore an unknown."
+  },
+  {
+   "id": "example-calculated-at-the-bound",
+   "origin": "Examples, a calculated quantity: the calculated amount is 500 written with two decimal places, which compares as 500 (Core 7.4) and is copied as it was found",
+   "optIn": true,
+   "pack": "{\"specVersion\": \"0.2.0-draft\", \"id\": \"https://example.invalid/judgment-packs/rfc0016-row\", \"version\": \"0.1.0\", \"title\": \"Synthetic draft RFC 0016 row\", \"description\": \"Invented content for specification testing; it authorizes nothing.\", \"decision\": {\"intent\": \"Exercise one draft RFC 0016 declaration against one facts document.\", \"question\": \"Is the outcome produced, and with which values?\"}, \"metadata\": {\"requiredExtensions\": [\"org.judgmentpack.outcome-values\"]},  \"outcomes\": [{\"id\": \"approve-refund\", \"label\": \"An outcome\", \"extensions\": {\"org.judgmentpack.outcome-values\": {\"refundAmount\": {\"type\": \"decimal\", \"fromFact\": \"/refund/amount\"}}}}, {\"id\": \"refer-to-supervisor\", \"label\": \"An outcome\"}], \"rules\": [{\"id\": \"within\", \"description\": \"A refund of 500 or less is approved.\", \"when\": {\"op\": \"fact\", \"path\": \"/refund/amount\", \"operator\": \"less-than-or-equal\", \"value\": \"500\"}, \"outcome\": \"approve-refund\", \"onUnknown\": \"ignore\"}, {\"id\": \"above\", \"description\": \"A refund above 500 goes to a supervisor.\", \"when\": {\"op\": \"fact\", \"path\": \"/refund/amount\", \"operator\": \"greater-than\", \"value\": \"500\"}, \"outcome\": \"refer-to-supervisor\", \"onUnknown\": \"ignore\"}]}",
+   "facts": "{\"refund\": {\"amount\": \"500.00\"}}",
+   "evidenceAvailability": null,
+   "expected": {
+    "disposition": "{\"handoff\":{\"state\":\"none\"},\"kind\":\"outcome\",\"outcomeId\":\"approve-refund\",\"reasons\":[],\"value\":{\"refundAmount\":\"500.00\"}}"
+   },
+   "note": "The RFC gives no pack for this example. Chosen in writing one: the value is named refundAmount; a refund above 500 is sent to a supervisor by an outcome of its own, refer-to-supervisor, which declares nothing, and not by an escalation; a refund of exactly 500 is not above 500 and is approved; both rules ignore an unknown."
+  },
+  {
+   "id": "example-calculated-above",
+   "origin": "Examples, a calculated quantity: the calculated amount is above 500, and the outcome produced declares nothing",
+   "optIn": true,
+   "pack": "{\"specVersion\": \"0.2.0-draft\", \"id\": \"https://example.invalid/judgment-packs/rfc0016-row\", \"version\": \"0.1.0\", \"title\": \"Synthetic draft RFC 0016 row\", \"description\": \"Invented content for specification testing; it authorizes nothing.\", \"decision\": {\"intent\": \"Exercise one draft RFC 0016 declaration against one facts document.\", \"question\": \"Is the outcome produced, and with which values?\"}, \"metadata\": {\"requiredExtensions\": [\"org.judgmentpack.outcome-values\"]},  \"outcomes\": [{\"id\": \"approve-refund\", \"label\": \"An outcome\", \"extensions\": {\"org.judgmentpack.outcome-values\": {\"refundAmount\": {\"type\": \"decimal\", \"fromFact\": \"/refund/amount\"}}}}, {\"id\": \"refer-to-supervisor\", \"label\": \"An outcome\"}], \"rules\": [{\"id\": \"within\", \"description\": \"A refund of 500 or less is approved.\", \"when\": {\"op\": \"fact\", \"path\": \"/refund/amount\", \"operator\": \"less-than-or-equal\", \"value\": \"500\"}, \"outcome\": \"approve-refund\", \"onUnknown\": \"ignore\"}, {\"id\": \"above\", \"description\": \"A refund above 500 goes to a supervisor.\", \"when\": {\"op\": \"fact\", \"path\": \"/refund/amount\", \"operator\": \"greater-than\", \"value\": \"500\"}, \"outcome\": \"refer-to-supervisor\", \"onUnknown\": \"ignore\"}]}",
+   "facts": "{\"refund\": {\"amount\": \"500.01\"}}",
+   "evidenceAvailability": null,
+   "expected": {
+    "disposition": "{\"handoff\":{\"state\":\"none\"},\"kind\":\"outcome\",\"outcomeId\":\"refer-to-supervisor\",\"reasons\":[]}"
+   },
+   "note": "The RFC gives no pack for this example. Chosen in writing one: the value is named refundAmount; a refund above 500 is sent to a supervisor by an outcome of its own, refer-to-supervisor, which declares nothing, and not by an escalation; a refund of exactly 500 is not above 500 and is approved; both rules ignore an unknown."
   },
   {
    "id": "error-malformed-declaration-applicability-false",

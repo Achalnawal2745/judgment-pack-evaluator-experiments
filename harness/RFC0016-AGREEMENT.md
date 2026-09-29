@@ -1,6 +1,7 @@
 # RFC 0016 cross-implementation agreement
 
-Run date 2026-09-28. Two prototypes of draft
+Run date 2026-09-29, over 66 rows. The first 60 were run on 2026-09-28 and give now what they
+gave then. Two prototypes of draft
 [RFC 0016](https://github.com/Judgment-Pack/judgment-pack-spec/blob/main/rfcs/0016-outcome-values.md)
 (outcome values) are driven over the same inputs, and what each answers is compared with the other
 and with the answer the RFC's text gives.
@@ -43,15 +44,51 @@ class alone, since §8.4 leaves an error's transport undefined and the two diffe
 
 | | |
 | --- | ---: |
-| Rows | **60** |
-| Both implementations give the RFC's answer | **56** |
+| Rows | **66** |
+| Both implementations give the RFC's answer | **62** |
 | Both agree with each other and not with the RFC | **3** |
 | The two implementations differ | **1** |
 
-The 60 rows are the RFC's 6 positive and 14 negative document cases, its 28 evaluation rows, 7
-error rows, and 5 rows from its Examples. Of the 39 rows whose answer is a disposition, 38 are
+The 66 rows are the RFC's 6 positive and 14 negative document cases, its 28 evaluation rows, 7
+error rows, and 11 rows from its Examples. Of the 45 rows whose answer is a disposition, 44 are
 byte-identical between the two implementations and identical to the RFC's bytes, among them the
 disposition the RFC prints under *The disposition*.
+
+## The rows of the Examples
+
+Five of the eleven were among the first 60. Six were added on 2026-09-29, for the cases of the
+RFC's Examples that had no row
+([issue 118](https://github.com/Judgment-Pack/judgment-pack-evaluator-experiments/issues/118)).
+Both implementations give the RFC's answer on each of the six.
+
+| Rows | What they run | The answer |
+| --- | --- | --- |
+| `example-tiers-high` | The tiers pack, with a score that makes its rules produce `limit-high` | That outcome, with `creditLimit` of `"10000"` |
+| `example-pass-through-undeclared-amount-absent`, `…-amount-a-number` | The pass-through pack without its declaration and without its entry in `metadata.requiredExtensions`, with the amount absent and with the amount given as the JSON number `149.5` | `approve-refund`, and no `value` |
+| `example-calculated-approved`, `…-at-the-bound`, `…-above` | A pack written for the RFC's calculated quantity | `approve-refund` with the amount as the fact gives it, or `refer-to-supervisor` with no `value` |
+
+**The pack without the declaration is a pack of Core's**, and its two rows are run with neither
+opt-in. They are the other half of two rows that were there already: with the declaration the
+same facts give `unresolved`, and without it they give the outcome. That is the RFC's point in
+that example, and both halves of it are now run.
+
+**The RFC gives no pack for the calculated quantity.** It gives the sentence the pack is written
+from, the fact, the operand and the declaration. The pack of these rows is one reading of it, and
+each row carries what was chosen in writing it:
+
+- the value is named `refundAmount`;
+- a refund above 500 is sent to a supervisor by an outcome of its own, `refer-to-supervisor`,
+  which declares nothing, and not by an escalation;
+- a refund of exactly 500 is not above 500, and is approved;
+- both rules ignore an unknown.
+
+Another reading would give other rows. The row at the bound runs an amount of `"500.00"`: the
+comparison reads it by its mathematical value (Core §7.4), so the refund is approved, and the
+value is copied as it was found, so the disposition carries `"500.00"` and not `"500"`.
+
+**What the Examples' rows still do not run** is what the RFC's open questions leave undecided:
+a reader whose schema admits the name, an input at either implementation's limits, and a pack
+that uses this draft together with RFC 0008.
 
 ## The one divergence
 

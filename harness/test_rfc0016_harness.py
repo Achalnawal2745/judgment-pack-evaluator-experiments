@@ -129,7 +129,7 @@ class CasesFileTests(unittest.TestCase):
         self.assertEqual(written, self.text)
 
     def test_every_row_has_one_expected_answer_and_an_origin_in_the_rfc(self):
-        self.assertEqual(60, len(self.document["cases"]))
+        self.assertEqual(66, len(self.document["cases"]))
         ids = [case["id"] for case in self.document["cases"]]
         self.assertEqual(len(ids), len(set(ids)))
         for case in self.document["cases"]:
@@ -160,6 +160,49 @@ class CasesFileTests(unittest.TestCase):
         self.assertIn(backslash + "ud800", rows["document-string-constant-unpaired-surrogate"]["pack"])
         self.assertIn(backslash + "udc00", rows["adversarial-string-fact-unpaired-surrogate"]["facts"])
         self.assertIn("amount" + backslash + "n", rows["document-name-ends-in-line-feed"]["pack"])
+
+    def test_the_rows_of_the_examples(self):
+        rows = {case["id"]: case for case in self.document["cases"]}
+        examples = [case for case in self.document["cases"] if case["origin"].startswith("Examples, ")]
+        self.assertEqual(11, len(examples))
+        # The three outcomes of the tiers, each by a row of the one pack.
+        tiers = [rows["example-tiers-" + which] for which in ("high", "standard", "decline")]
+        self.assertEqual(1, len({row["pack"] for row in tiers}))
+        self.assertEqual(
+            ["limit-high", "limit-standard", "decline"],
+            [json.loads(row["expected"]["disposition"])["outcomeId"] for row in tiers],
+        )
+        # The pack without the declaration is a pack of Core's: it does not hold the
+        # extension's name, it has no metadata, and it is run with neither opt-in. But for
+        # those it is the pack of the pass-through rows.
+        declared = json.loads(rows["example-pass-through"]["pack"])
+        del declared["outcomes"][0]["extensions"]
+        del declared["metadata"]
+        for name in ("example-pass-through-undeclared-amount-absent", "example-pass-through-undeclared-amount-a-number"):
+            with self.subTest(row=name):
+                row = rows[name]
+                self.assertFalse(row["optIn"])
+                self.assertNotIn("org.judgmentpack.", row["pack"])
+                undeclared = json.loads(row["pack"])
+                self.assertNotIn("metadata", undeclared)
+                self.assertNotIn("value", json.loads(row["expected"]["disposition"]))
+                self.assertEqual(declared, undeclared)
+                self.assertEqual(rows[name.replace("-undeclared", "")]["facts"], row["facts"])
+        # The RFC gives no pack for the calculated quantity, so each row of it says what
+        # was chosen in writing one.
+        calculated = [case for case in examples if case["origin"].startswith("Examples, a calculated quantity: ")]
+        self.assertEqual(3, len(calculated))
+        self.assertEqual(1, len({row["pack"] for row in calculated}))
+        for row in calculated:
+            with self.subTest(row=row["id"]):
+                self.assertTrue(row["note"].startswith("The RFC gives no pack for this example. Chosen in writing one: "))
+                self.assertIn('"fromFact": "/refund/amount"', row["pack"])
+                self.assertIn('"value": "500"', row["pack"])
+        # A value is copied as it was found: 500.00 is not written as 500.
+        self.assertEqual(
+            {"refundAmount": "500.00"},
+            json.loads(rows["example-calculated-at-the-bound"]["expected"]["disposition"])["value"],
+        )
 
     def test_every_known_row_is_a_row_and_gives_its_reason(self):
         ids = {case["id"] for case in self.document["cases"]}
