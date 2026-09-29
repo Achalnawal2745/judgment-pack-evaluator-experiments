@@ -1,8 +1,8 @@
 """RFC 8785 serialization for Core §8.3 dispositions.
 
-Portable dispositions contain only strings, arrays, and objects. This small
-serializer intentionally implements only that closed value domain, avoiding a
-dependency and avoiding RFC 8785's number-serialization surface entirely.
+Portable dispositions contain strings, arrays, objects, and (with RFC 0016)
+Booleans. This small serializer implements only that closed value domain,
+avoiding a dependency and RFC 8785's number-serialization surface entirely.
 """
 
 from __future__ import annotations
@@ -19,6 +19,8 @@ def canonicalize_disposition(disposition: dict[str, Any]) -> bytes:
 
 
 def _serialize(value: Any) -> str:
+    if isinstance(value, bool):
+        return "true" if value else "false"
     if isinstance(value, str):
         return _quote(value)
     if isinstance(value, list):
@@ -31,7 +33,7 @@ def _serialize(value: Any) -> str:
             _quote(key) + ":" + _serialize(value[key]) for key in members
         ) + "}"
     raise TypeError(
-        "portable dispositions may contain only strings, arrays, and objects"
+        "portable dispositions may contain only strings, Booleans, arrays, and objects"
     )
 
 

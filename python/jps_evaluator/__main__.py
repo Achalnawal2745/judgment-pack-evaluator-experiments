@@ -19,7 +19,7 @@ def _parser() -> argparse.ArgumentParser:
         prog="python -m jps_evaluator",
         description=(
             "Apply Judgment Pack Core evaluator semantics, optionally with the "
-            "experimental RFC 0008 prototype, to one pack."
+            "experimental RFC 0008 and RFC 0016 prototypes, to one pack."
         ),
     )
     parser.add_argument("--pack", required=True, help="path to a conformant pack JSON document")
@@ -37,6 +37,11 @@ def _parser() -> argparse.ArgumentParser:
         "--enable-rfc0008",
         action="store_true",
         help="opt in to the draft RFC 0008 exists/every/uniform prototype",
+    )
+    parser.add_argument(
+        "--enable-rfc0016",
+        action="store_true",
+        help="opt in to the draft RFC 0016 outcome-values prototype",
     )
     parser.add_argument(
         "--evaluation-work-limit",
@@ -58,7 +63,9 @@ def main(argv: Sequence[str] | None = None) -> int:
             pack = load_json_file(args.pack)
         except EvaluationInputError as exc:
             raise PackNotConformantError(str(exc)) from exc
-        _admit_pack(pack, enable_rfc0008=args.enable_rfc0008)
+        _admit_pack(
+            pack, enable_rfc0008=args.enable_rfc0008, enable_rfc0016=args.enable_rfc0016
+        )
         facts = load_json_file(args.facts)
         evidence = load_json_file(args.evidence) if args.evidence else None
         if args.evidence and evidence is None:
@@ -73,6 +80,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                 name for group in args.supported_extension for name in group
             ],
             enable_rfc0008=args.enable_rfc0008,
+            enable_rfc0016=args.enable_rfc0016,
             evaluation_work_limit=args.evaluation_work_limit,
         )
     except EvaluationError as exc:

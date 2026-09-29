@@ -87,6 +87,13 @@ jobs:
         run: python3 -m unittest test_error_class_agreement -v
       - name: Compare both evaluators' §8.4 error classes over the staged rows
         run: python3 harness/error_class_agreement.py ./jpack python
+      # The draft RFC 0016 comparison is not run here yet. The pinned runtime is older than the
+      # prototype, so the pinned binary has no such flag, and the pin is not moved in the commit
+      # that adds rows. What is held here needs neither evaluator: the driver's verdicts, and the
+      # rows' expected answers against the script that writes them.
+      - name: Test the draft RFC 0016 driver and hold its rows to the script that writes them
+        working-directory: harness
+        run: python3 -m unittest test_rfc0016_harness -v
 
   study-001-harness:
     name: Study 001 · deterministic harness

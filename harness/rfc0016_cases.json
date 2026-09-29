@@ -1,0 +1,744 @@
+{
+ "rfc": "0016",
+ "specCommit": "7c7abbb3124f1b58da21b1d2f9744b1124d4cb89",
+ "known": {
+  "adversarial-string-fact-unpaired-surrogate": {
+   "verdict": "DIVERGENT",
+   "reason": "The Go runtime's carrier refuses any input that holds an unpaired surrogate escape, so the facts document is a malformed input before a value is selected (ADR-0039, finding 1). The Python evaluator admits the document and the value does not resolve, which is the RFC's answer (DECISIONS.md, entry 30). Core \u00a72.1 does not say which carrier is right."
+  },
+  "error-unsupported-well-formed": {
+   "verdict": "AGREE-OFF-RFC",
+   "reason": "The row needs a schema that admits the name. Without the opt-in both implementations hold a pack to the schema of 0.2.0-draft, under which the name is reserved and the pack is not structurally conforming. The RFC's Compatibility section says as much. Recorded by the Go runtime in ADR-0039, finding 2, and by the Python evaluator in DECISIONS.md, entry 28."
+  },
+  "error-unsupported-empty-declaration": {
+   "verdict": "AGREE-OFF-RFC",
+   "reason": "The row needs a schema that admits the name. Without the opt-in both implementations hold a pack to the schema of 0.2.0-draft, under which the name is reserved and the pack is not structurally conforming. The RFC's Compatibility section says as much. Recorded by the Go runtime in ADR-0039, finding 2, and by the Python evaluator in DECISIONS.md, entry 28."
+  },
+  "error-unsupported-unknown-type": {
+   "verdict": "AGREE-OFF-RFC",
+   "reason": "The row needs a schema that admits the name. Without the opt-in both implementations hold a pack to the schema of 0.2.0-draft, under which the name is reserved and the pack is not structurally conforming. The RFC's Compatibility section says as much. Recorded by the Go runtime in ADR-0039, finding 2, and by the Python evaluator in DECISIONS.md, entry 28."
+  }
+ },
+ "cases": [
+  {
+   "id": "document-constant-string",
+   "origin": "Conformance, document cases, positive: a constant of type string",
+   "optIn": true,
+   "pack": "{\"specVersion\": \"0.2.0-draft\", \"id\": \"https://example.invalid/judgment-packs/rfc0016-row\", \"version\": \"0.1.0\", \"title\": \"Synthetic draft RFC 0016 row\", \"description\": \"Invented content for specification testing; it authorizes nothing.\", \"decision\": {\"intent\": \"Exercise one draft RFC 0016 declaration against one facts document.\", \"question\": \"Is the outcome produced, and with which values?\"}, \"metadata\": {\"requiredExtensions\": [\"org.judgmentpack.outcome-values\"]},  \"outcomes\": [{\"id\": \"approve\", \"label\": \"An outcome\", \"extensions\": {\"org.judgmentpack.outcome-values\": {\"currency\": {\"type\": \"string\", \"constant\": \"CAD\"}}}}, {\"id\": \"decline\", \"label\": \"An outcome\"}], \"rules\": [{\"id\": \"the-rule\", \"description\": \"The one rule.\", \"when\": {\"op\": \"fact\", \"path\": \"/go\", \"operator\": \"equals\", \"value\": true}, \"outcome\": \"approve\", \"onUnknown\": \"ignore\"}]}",
+   "facts": "{\"go\": true}",
+   "evidenceAvailability": null,
+   "expected": {
+    "disposition": "{\"handoff\":{\"state\":\"none\"},\"kind\":\"outcome\",\"outcomeId\":\"approve\",\"reasons\":[],\"value\":{\"currency\":\"CAD\"}}"
+   },
+   "note": null
+  },
+  {
+   "id": "document-constant-decimal",
+   "origin": "Conformance, document cases, positive: a constant of type decimal",
+   "optIn": true,
+   "pack": "{\"specVersion\": \"0.2.0-draft\", \"id\": \"https://example.invalid/judgment-packs/rfc0016-row\", \"version\": \"0.1.0\", \"title\": \"Synthetic draft RFC 0016 row\", \"description\": \"Invented content for specification testing; it authorizes nothing.\", \"decision\": {\"intent\": \"Exercise one draft RFC 0016 declaration against one facts document.\", \"question\": \"Is the outcome produced, and with which values?\"}, \"metadata\": {\"requiredExtensions\": [\"org.judgmentpack.outcome-values\"]},  \"outcomes\": [{\"id\": \"approve\", \"label\": \"An outcome\", \"extensions\": {\"org.judgmentpack.outcome-values\": {\"creditLimit\": {\"type\": \"decimal\", \"constant\": \"10000\"}}}}, {\"id\": \"decline\", \"label\": \"An outcome\"}], \"rules\": [{\"id\": \"the-rule\", \"description\": \"The one rule.\", \"when\": {\"op\": \"fact\", \"path\": \"/go\", \"operator\": \"equals\", \"value\": true}, \"outcome\": \"approve\", \"onUnknown\": \"ignore\"}]}",
+   "facts": "{\"go\": true}",
+   "evidenceAvailability": null,
+   "expected": {
+    "disposition": "{\"handoff\":{\"state\":\"none\"},\"kind\":\"outcome\",\"outcomeId\":\"approve\",\"reasons\":[],\"value\":{\"creditLimit\":\"10000\"}}"
+   },
+   "note": null
+  },
+  {
+   "id": "document-constant-boolean",
+   "origin": "Conformance, document cases, positive: a constant of type boolean",
+   "optIn": true,
+   "pack": "{\"specVersion\": \"0.2.0-draft\", \"id\": \"https://example.invalid/judgment-packs/rfc0016-row\", \"version\": \"0.1.0\", \"title\": \"Synthetic draft RFC 0016 row\", \"description\": \"Invented content for specification testing; it authorizes nothing.\", \"decision\": {\"intent\": \"Exercise one draft RFC 0016 declaration against one facts document.\", \"question\": \"Is the outcome produced, and with which values?\"}, \"metadata\": {\"requiredExtensions\": [\"org.judgmentpack.outcome-values\"]},  \"outcomes\": [{\"id\": \"approve\", \"label\": \"An outcome\", \"extensions\": {\"org.judgmentpack.outcome-values\": {\"needsReceipt\": {\"type\": \"boolean\", \"constant\": true}}}}, {\"id\": \"decline\", \"label\": \"An outcome\"}], \"rules\": [{\"id\": \"the-rule\", \"description\": \"The one rule.\", \"when\": {\"op\": \"fact\", \"path\": \"/go\", \"operator\": \"equals\", \"value\": true}, \"outcome\": \"approve\", \"onUnknown\": \"ignore\"}]}",
+   "facts": "{\"go\": true}",
+   "evidenceAvailability": null,
+   "expected": {
+    "disposition": "{\"handoff\":{\"state\":\"none\"},\"kind\":\"outcome\",\"outcomeId\":\"approve\",\"reasons\":[],\"value\":{\"needsReceipt\":true}}"
+   },
+   "note": null
+  },
+  {
+   "id": "document-from-fact",
+   "origin": "Conformance, document cases, positive: one with fromFact",
+   "optIn": true,
+   "pack": "{\"specVersion\": \"0.2.0-draft\", \"id\": \"https://example.invalid/judgment-packs/rfc0016-row\", \"version\": \"0.1.0\", \"title\": \"Synthetic draft RFC 0016 row\", \"description\": \"Invented content for specification testing; it authorizes nothing.\", \"decision\": {\"intent\": \"Exercise one draft RFC 0016 declaration against one facts document.\", \"question\": \"Is the outcome produced, and with which values?\"}, \"metadata\": {\"requiredExtensions\": [\"org.judgmentpack.outcome-values\"]},  \"outcomes\": [{\"id\": \"approve\", \"label\": \"An outcome\", \"extensions\": {\"org.judgmentpack.outcome-values\": {\"refundAmount\": {\"type\": \"decimal\", \"fromFact\": \"/amount\"}}}}, {\"id\": \"decline\", \"label\": \"An outcome\"}], \"rules\": [{\"id\": \"the-rule\", \"description\": \"The one rule.\", \"when\": {\"op\": \"fact\", \"path\": \"/go\", \"operator\": \"equals\", \"value\": true}, \"outcome\": \"approve\", \"onUnknown\": \"ignore\"}]}",
+   "facts": "{\"go\": true, \"amount\": \"149.50\"}",
+   "evidenceAvailability": null,
+   "expected": {
+    "disposition": "{\"handoff\":{\"state\":\"none\"},\"kind\":\"outcome\",\"outcomeId\":\"approve\",\"reasons\":[],\"value\":{\"refundAmount\":\"149.50\"}}"
+   },
+   "note": null
+  },
+  {
+   "id": "document-mixed",
+   "origin": "Conformance, document cases, positive: one mixing both",
+   "optIn": true,
+   "pack": "{\"specVersion\": \"0.2.0-draft\", \"id\": \"https://example.invalid/judgment-packs/rfc0016-row\", \"version\": \"0.1.0\", \"title\": \"Synthetic draft RFC 0016 row\", \"description\": \"Invented content for specification testing; it authorizes nothing.\", \"decision\": {\"intent\": \"Exercise one draft RFC 0016 declaration against one facts document.\", \"question\": \"Is the outcome produced, and with which values?\"}, \"metadata\": {\"requiredExtensions\": [\"org.judgmentpack.outcome-values\"]},  \"outcomes\": [{\"id\": \"approve\", \"label\": \"An outcome\", \"extensions\": {\"org.judgmentpack.outcome-values\": {\"refundAmount\": {\"type\": \"decimal\", \"fromFact\": \"/proposed/refundAmount\"}, \"currency\": {\"type\": \"string\", \"constant\": \"CAD\"}}}}, {\"id\": \"decline\", \"label\": \"An outcome\"}], \"rules\": [{\"id\": \"the-rule\", \"description\": \"The one rule.\", \"when\": {\"op\": \"fact\", \"path\": \"/go\", \"operator\": \"equals\", \"value\": true}, \"outcome\": \"approve\", \"onUnknown\": \"ignore\"}]}",
+   "facts": "{\"go\": true, \"proposed\": {\"refundAmount\": \"149.50\"}}",
+   "evidenceAvailability": null,
+   "expected": {
+    "disposition": "{\"handoff\":{\"state\":\"none\"},\"kind\":\"outcome\",\"outcomeId\":\"approve\",\"reasons\":[],\"value\":{\"currency\":\"CAD\",\"refundAmount\":\"149.50\"}}"
+   },
+   "note": null
+  },
+  {
+   "id": "document-constant-surrogate-pair",
+   "origin": "Conformance, document cases, positive: a string constant outside the Basic Multilingual Plane, written as a surrogate pair",
+   "optIn": true,
+   "pack": "{\"specVersion\": \"0.2.0-draft\", \"id\": \"https://example.invalid/judgment-packs/rfc0016-row\", \"version\": \"0.1.0\", \"title\": \"Synthetic draft RFC 0016 row\", \"description\": \"Invented content for specification testing; it authorizes nothing.\", \"decision\": {\"intent\": \"Exercise one draft RFC 0016 declaration against one facts document.\", \"question\": \"Is the outcome produced, and with which values?\"}, \"metadata\": {\"requiredExtensions\": [\"org.judgmentpack.outcome-values\"]},  \"outcomes\": [{\"id\": \"approve\", \"label\": \"An outcome\", \"extensions\": {\"org.judgmentpack.outcome-values\": {\"mark\": {\"type\": \"string\", \"constant\": \"\\ud83d\\ude00\"}}}}, {\"id\": \"decline\", \"label\": \"An outcome\"}], \"rules\": [{\"id\": \"the-rule\", \"description\": \"The one rule.\", \"when\": {\"op\": \"fact\", \"path\": \"/go\", \"operator\": \"equals\", \"value\": true}, \"outcome\": \"approve\", \"onUnknown\": \"ignore\"}]}",
+   "facts": "{\"go\": true}",
+   "evidenceAvailability": null,
+   "expected": {
+    "disposition": "{\"handoff\":{\"state\":\"none\"},\"kind\":\"outcome\",\"outcomeId\":\"approve\",\"reasons\":[],\"value\":{\"mark\":\"\ud83d\ude00\"}}"
+   },
+   "note": "The pack holds the escape and the expected disposition the character, as RFC 8785 writes it."
+  },
+  {
+   "id": "document-both-sources",
+   "origin": "Conformance, document cases, negative: a value source with both constant and fromFact",
+   "optIn": true,
+   "pack": "{\"specVersion\": \"0.2.0-draft\", \"id\": \"https://example.invalid/judgment-packs/rfc0016-row\", \"version\": \"0.1.0\", \"title\": \"Synthetic draft RFC 0016 row\", \"description\": \"Invented content for specification testing; it authorizes nothing.\", \"decision\": {\"intent\": \"Exercise one draft RFC 0016 declaration against one facts document.\", \"question\": \"Is the outcome produced, and with which values?\"}, \"metadata\": {\"requiredExtensions\": [\"org.judgmentpack.outcome-values\"]},  \"outcomes\": [{\"id\": \"approve\", \"label\": \"An outcome\", \"extensions\": {\"org.judgmentpack.outcome-values\": {\"v\": {\"type\": \"string\", \"constant\": \"a\", \"fromFact\": \"/a\"}}}}, {\"id\": \"decline\", \"label\": \"An outcome\"}], \"rules\": [{\"id\": \"the-rule\", \"description\": \"The one rule.\", \"when\": {\"op\": \"fact\", \"path\": \"/go\", \"operator\": \"equals\", \"value\": true}, \"outcome\": \"approve\", \"onUnknown\": \"ignore\"}]}",
+   "facts": "{\"go\": true}",
+   "evidenceAvailability": null,
+   "expected": {
+    "errorClass": "pack-not-conformant"
+   },
+   "note": null
+  },
+  {
+   "id": "document-no-source",
+   "origin": "Conformance, document cases, negative: a value source with neither",
+   "optIn": true,
+   "pack": "{\"specVersion\": \"0.2.0-draft\", \"id\": \"https://example.invalid/judgment-packs/rfc0016-row\", \"version\": \"0.1.0\", \"title\": \"Synthetic draft RFC 0016 row\", \"description\": \"Invented content for specification testing; it authorizes nothing.\", \"decision\": {\"intent\": \"Exercise one draft RFC 0016 declaration against one facts document.\", \"question\": \"Is the outcome produced, and with which values?\"}, \"metadata\": {\"requiredExtensions\": [\"org.judgmentpack.outcome-values\"]},  \"outcomes\": [{\"id\": \"approve\", \"label\": \"An outcome\", \"extensions\": {\"org.judgmentpack.outcome-values\": {\"v\": {\"type\": \"string\"}}}}, {\"id\": \"decline\", \"label\": \"An outcome\"}], \"rules\": [{\"id\": \"the-rule\", \"description\": \"The one rule.\", \"when\": {\"op\": \"fact\", \"path\": \"/go\", \"operator\": \"equals\", \"value\": true}, \"outcome\": \"approve\", \"onUnknown\": \"ignore\"}]}",
+   "facts": "{\"go\": true}",
+   "evidenceAvailability": null,
+   "expected": {
+    "errorClass": "pack-not-conformant"
+   },
+   "note": null
+  },
+  {
+   "id": "document-unknown-type",
+   "origin": "Conformance, document cases, negative: a value source with an unknown type",
+   "optIn": true,
+   "pack": "{\"specVersion\": \"0.2.0-draft\", \"id\": \"https://example.invalid/judgment-packs/rfc0016-row\", \"version\": \"0.1.0\", \"title\": \"Synthetic draft RFC 0016 row\", \"description\": \"Invented content for specification testing; it authorizes nothing.\", \"decision\": {\"intent\": \"Exercise one draft RFC 0016 declaration against one facts document.\", \"question\": \"Is the outcome produced, and with which values?\"}, \"metadata\": {\"requiredExtensions\": [\"org.judgmentpack.outcome-values\"]},  \"outcomes\": [{\"id\": \"approve\", \"label\": \"An outcome\", \"extensions\": {\"org.judgmentpack.outcome-values\": {\"v\": {\"type\": \"number\", \"constant\": \"1\"}}}}, {\"id\": \"decline\", \"label\": \"An outcome\"}], \"rules\": [{\"id\": \"the-rule\", \"description\": \"The one rule.\", \"when\": {\"op\": \"fact\", \"path\": \"/go\", \"operator\": \"equals\", \"value\": true}, \"outcome\": \"approve\", \"onUnknown\": \"ignore\"}]}",
+   "facts": "{\"go\": true}",
+   "evidenceAvailability": null,
+   "expected": {
+    "errorClass": "pack-not-conformant"
+   },
+   "note": null
+  },
+  {
+   "id": "document-undefined-member",
+   "origin": "Conformance, document cases, negative: a value source with a member this section does not define",
+   "optIn": true,
+   "pack": "{\"specVersion\": \"0.2.0-draft\", \"id\": \"https://example.invalid/judgment-packs/rfc0016-row\", \"version\": \"0.1.0\", \"title\": \"Synthetic draft RFC 0016 row\", \"description\": \"Invented content for specification testing; it authorizes nothing.\", \"decision\": {\"intent\": \"Exercise one draft RFC 0016 declaration against one facts document.\", \"question\": \"Is the outcome produced, and with which values?\"}, \"metadata\": {\"requiredExtensions\": [\"org.judgmentpack.outcome-values\"]},  \"outcomes\": [{\"id\": \"approve\", \"label\": \"An outcome\", \"extensions\": {\"org.judgmentpack.outcome-values\": {\"v\": {\"type\": \"string\", \"constant\": \"a\", \"unit\": \"CAD\"}}}}, {\"id\": \"decline\", \"label\": \"An outcome\"}], \"rules\": [{\"id\": \"the-rule\", \"description\": \"The one rule.\", \"when\": {\"op\": \"fact\", \"path\": \"/go\", \"operator\": \"equals\", \"value\": true}, \"outcome\": \"approve\", \"onUnknown\": \"ignore\"}]}",
+   "facts": "{\"go\": true}",
+   "evidenceAvailability": null,
+   "expected": {
+    "errorClass": "pack-not-conformant"
+   },
+   "note": null
+  },
+  {
+   "id": "document-decimal-constant-fails-grammar",
+   "origin": "Conformance, document cases, negative: a decimal constant that fails \u00a72.2",
+   "optIn": true,
+   "pack": "{\"specVersion\": \"0.2.0-draft\", \"id\": \"https://example.invalid/judgment-packs/rfc0016-row\", \"version\": \"0.1.0\", \"title\": \"Synthetic draft RFC 0016 row\", \"description\": \"Invented content for specification testing; it authorizes nothing.\", \"decision\": {\"intent\": \"Exercise one draft RFC 0016 declaration against one facts document.\", \"question\": \"Is the outcome produced, and with which values?\"}, \"metadata\": {\"requiredExtensions\": [\"org.judgmentpack.outcome-values\"]},  \"outcomes\": [{\"id\": \"approve\", \"label\": \"An outcome\", \"extensions\": {\"org.judgmentpack.outcome-values\": {\"v\": {\"type\": \"decimal\", \"constant\": \"1e3\"}}}}, {\"id\": \"decline\", \"label\": \"An outcome\"}], \"rules\": [{\"id\": \"the-rule\", \"description\": \"The one rule.\", \"when\": {\"op\": \"fact\", \"path\": \"/go\", \"operator\": \"equals\", \"value\": true}, \"outcome\": \"approve\", \"onUnknown\": \"ignore\"}]}",
+   "facts": "{\"go\": true}",
+   "evidenceAvailability": null,
+   "expected": {
+    "errorClass": "pack-not-conformant"
+   },
+   "note": null
+  },
+  {
+   "id": "document-boolean-constant-as-string",
+   "origin": "Conformance, document cases, negative: a boolean constant given as the string \"true\"",
+   "optIn": true,
+   "pack": "{\"specVersion\": \"0.2.0-draft\", \"id\": \"https://example.invalid/judgment-packs/rfc0016-row\", \"version\": \"0.1.0\", \"title\": \"Synthetic draft RFC 0016 row\", \"description\": \"Invented content for specification testing; it authorizes nothing.\", \"decision\": {\"intent\": \"Exercise one draft RFC 0016 declaration against one facts document.\", \"question\": \"Is the outcome produced, and with which values?\"}, \"metadata\": {\"requiredExtensions\": [\"org.judgmentpack.outcome-values\"]},  \"outcomes\": [{\"id\": \"approve\", \"label\": \"An outcome\", \"extensions\": {\"org.judgmentpack.outcome-values\": {\"v\": {\"type\": \"boolean\", \"constant\": \"true\"}}}}, {\"id\": \"decline\", \"label\": \"An outcome\"}], \"rules\": [{\"id\": \"the-rule\", \"description\": \"The one rule.\", \"when\": {\"op\": \"fact\", \"path\": \"/go\", \"operator\": \"equals\", \"value\": true}, \"outcome\": \"approve\", \"onUnknown\": \"ignore\"}]}",
+   "facts": "{\"go\": true}",
+   "evidenceAvailability": null,
+   "expected": {
+    "errorClass": "pack-not-conformant"
+   },
+   "note": null
+  },
+  {
+   "id": "document-string-constant-unpaired-surrogate",
+   "origin": "Conformance, document cases, negative: a string constant holding an unpaired surrogate",
+   "optIn": true,
+   "pack": "{\"specVersion\": \"0.2.0-draft\", \"id\": \"https://example.invalid/judgment-packs/rfc0016-row\", \"version\": \"0.1.0\", \"title\": \"Synthetic draft RFC 0016 row\", \"description\": \"Invented content for specification testing; it authorizes nothing.\", \"decision\": {\"intent\": \"Exercise one draft RFC 0016 declaration against one facts document.\", \"question\": \"Is the outcome produced, and with which values?\"}, \"metadata\": {\"requiredExtensions\": [\"org.judgmentpack.outcome-values\"]},  \"outcomes\": [{\"id\": \"approve\", \"label\": \"An outcome\", \"extensions\": {\"org.judgmentpack.outcome-values\": {\"v\": {\"type\": \"string\", \"constant\": \"\\ud800\"}}}}, {\"id\": \"decline\", \"label\": \"An outcome\"}], \"rules\": [{\"id\": \"the-rule\", \"description\": \"The one rule.\", \"when\": {\"op\": \"fact\", \"path\": \"/go\", \"operator\": \"equals\", \"value\": true}, \"outcome\": \"approve\", \"onUnknown\": \"ignore\"}]}",
+   "facts": "{\"go\": true}",
+   "evidenceAvailability": null,
+   "expected": {
+    "errorClass": "pack-not-conformant"
+   },
+   "note": null
+  },
+  {
+   "id": "document-empty-declaration",
+   "origin": "Conformance, document cases, negative: an empty declaration",
+   "optIn": true,
+   "pack": "{\"specVersion\": \"0.2.0-draft\", \"id\": \"https://example.invalid/judgment-packs/rfc0016-row\", \"version\": \"0.1.0\", \"title\": \"Synthetic draft RFC 0016 row\", \"description\": \"Invented content for specification testing; it authorizes nothing.\", \"decision\": {\"intent\": \"Exercise one draft RFC 0016 declaration against one facts document.\", \"question\": \"Is the outcome produced, and with which values?\"}, \"metadata\": {\"requiredExtensions\": [\"org.judgmentpack.outcome-values\"]},  \"outcomes\": [{\"id\": \"approve\", \"label\": \"An outcome\", \"extensions\": {\"org.judgmentpack.outcome-values\": {}}}, {\"id\": \"decline\", \"label\": \"An outcome\"}], \"rules\": [{\"id\": \"the-rule\", \"description\": \"The one rule.\", \"when\": {\"op\": \"fact\", \"path\": \"/go\", \"operator\": \"equals\", \"value\": true}, \"outcome\": \"approve\", \"onUnknown\": \"ignore\"}]}",
+   "facts": "{\"go\": true}",
+   "evidenceAvailability": null,
+   "expected": {
+    "errorClass": "pack-not-conformant"
+   },
+   "note": null
+  },
+  {
+   "id": "document-name-begins-with-capital",
+   "origin": "Conformance, document cases, negative: a value name that begins with a capital",
+   "optIn": true,
+   "pack": "{\"specVersion\": \"0.2.0-draft\", \"id\": \"https://example.invalid/judgment-packs/rfc0016-row\", \"version\": \"0.1.0\", \"title\": \"Synthetic draft RFC 0016 row\", \"description\": \"Invented content for specification testing; it authorizes nothing.\", \"decision\": {\"intent\": \"Exercise one draft RFC 0016 declaration against one facts document.\", \"question\": \"Is the outcome produced, and with which values?\"}, \"metadata\": {\"requiredExtensions\": [\"org.judgmentpack.outcome-values\"]},  \"outcomes\": [{\"id\": \"approve\", \"label\": \"An outcome\", \"extensions\": {\"org.judgmentpack.outcome-values\": {\"Amount\": {\"type\": \"string\", \"constant\": \"a\"}}}}, {\"id\": \"decline\", \"label\": \"An outcome\"}], \"rules\": [{\"id\": \"the-rule\", \"description\": \"The one rule.\", \"when\": {\"op\": \"fact\", \"path\": \"/go\", \"operator\": \"equals\", \"value\": true}, \"outcome\": \"approve\", \"onUnknown\": \"ignore\"}]}",
+   "facts": "{\"go\": true}",
+   "evidenceAvailability": null,
+   "expected": {
+    "errorClass": "pack-not-conformant"
+   },
+   "note": null
+  },
+  {
+   "id": "document-name-begins-with-digit",
+   "origin": "Conformance, document cases, negative: a value name that begins with a digit",
+   "optIn": true,
+   "pack": "{\"specVersion\": \"0.2.0-draft\", \"id\": \"https://example.invalid/judgment-packs/rfc0016-row\", \"version\": \"0.1.0\", \"title\": \"Synthetic draft RFC 0016 row\", \"description\": \"Invented content for specification testing; it authorizes nothing.\", \"decision\": {\"intent\": \"Exercise one draft RFC 0016 declaration against one facts document.\", \"question\": \"Is the outcome produced, and with which values?\"}, \"metadata\": {\"requiredExtensions\": [\"org.judgmentpack.outcome-values\"]},  \"outcomes\": [{\"id\": \"approve\", \"label\": \"An outcome\", \"extensions\": {\"org.judgmentpack.outcome-values\": {\"1st\": {\"type\": \"string\", \"constant\": \"a\"}}}}, {\"id\": \"decline\", \"label\": \"An outcome\"}], \"rules\": [{\"id\": \"the-rule\", \"description\": \"The one rule.\", \"when\": {\"op\": \"fact\", \"path\": \"/go\", \"operator\": \"equals\", \"value\": true}, \"outcome\": \"approve\", \"onUnknown\": \"ignore\"}]}",
+   "facts": "{\"go\": true}",
+   "evidenceAvailability": null,
+   "expected": {
+    "errorClass": "pack-not-conformant"
+   },
+   "note": null
+  },
+  {
+   "id": "document-name-ends-in-line-feed",
+   "origin": "Conformance, document cases, negative: a value name that ends in a line feed",
+   "optIn": true,
+   "pack": "{\"specVersion\": \"0.2.0-draft\", \"id\": \"https://example.invalid/judgment-packs/rfc0016-row\", \"version\": \"0.1.0\", \"title\": \"Synthetic draft RFC 0016 row\", \"description\": \"Invented content for specification testing; it authorizes nothing.\", \"decision\": {\"intent\": \"Exercise one draft RFC 0016 declaration against one facts document.\", \"question\": \"Is the outcome produced, and with which values?\"}, \"metadata\": {\"requiredExtensions\": [\"org.judgmentpack.outcome-values\"]},  \"outcomes\": [{\"id\": \"approve\", \"label\": \"An outcome\", \"extensions\": {\"org.judgmentpack.outcome-values\": {\"amount\\n\": {\"type\": \"string\", \"constant\": \"a\"}}}}, {\"id\": \"decline\", \"label\": \"An outcome\"}], \"rules\": [{\"id\": \"the-rule\", \"description\": \"The one rule.\", \"when\": {\"op\": \"fact\", \"path\": \"/go\", \"operator\": \"equals\", \"value\": true}, \"outcome\": \"approve\", \"onUnknown\": \"ignore\"}]}",
+   "facts": "{\"go\": true}",
+   "evidenceAvailability": null,
+   "expected": {
+    "errorClass": "pack-not-conformant"
+   },
+   "note": null
+  },
+  {
+   "id": "document-not-listed-as-required",
+   "origin": "Conformance, document cases, negative: a declaration in a pack that does not list the extension as required",
+   "optIn": true,
+   "pack": "{\"specVersion\": \"0.2.0-draft\", \"id\": \"https://example.invalid/judgment-packs/rfc0016-row\", \"version\": \"0.1.0\", \"title\": \"Synthetic draft RFC 0016 row\", \"description\": \"Invented content for specification testing; it authorizes nothing.\", \"decision\": {\"intent\": \"Exercise one draft RFC 0016 declaration against one facts document.\", \"question\": \"Is the outcome produced, and with which values?\"},   \"outcomes\": [{\"id\": \"approve\", \"label\": \"An outcome\", \"extensions\": {\"org.judgmentpack.outcome-values\": {\"refundAmount\": {\"type\": \"decimal\", \"fromFact\": \"/proposed/refundAmount\"}, \"currency\": {\"type\": \"string\", \"constant\": \"CAD\"}}}}, {\"id\": \"decline\", \"label\": \"An outcome\"}], \"rules\": [{\"id\": \"the-rule\", \"description\": \"The one rule.\", \"when\": {\"op\": \"fact\", \"path\": \"/go\", \"operator\": \"equals\", \"value\": true}, \"outcome\": \"approve\", \"onUnknown\": \"ignore\"}]}",
+   "facts": "{\"go\": true, \"proposed\": {\"refundAmount\": \"149.50\"}}",
+   "evidenceAvailability": null,
+   "expected": {
+    "errorClass": "pack-not-conformant"
+   },
+   "note": null
+  },
+  {
+   "id": "document-name-on-root-alone",
+   "origin": "Conformance, document cases, negative: the extension name on the root object alone",
+   "optIn": true,
+   "pack": "{\"specVersion\": \"0.2.0-draft\", \"id\": \"https://example.invalid/judgment-packs/rfc0016-row\", \"version\": \"0.1.0\", \"title\": \"Synthetic draft RFC 0016 row\", \"description\": \"Invented content for specification testing; it authorizes nothing.\", \"decision\": {\"intent\": \"Exercise one draft RFC 0016 declaration against one facts document.\", \"question\": \"Is the outcome produced, and with which values?\"}, \"metadata\": {\"requiredExtensions\": [\"org.judgmentpack.outcome-values\"]}, \"extensions\": {\"org.judgmentpack.outcome-values\": {\"refundAmount\": {\"type\": \"decimal\", \"fromFact\": \"/proposed/refundAmount\"}, \"currency\": {\"type\": \"string\", \"constant\": \"CAD\"}}}, \"outcomes\": [{\"id\": \"approve\", \"label\": \"An outcome\"}, {\"id\": \"decline\", \"label\": \"An outcome\"}], \"rules\": [{\"id\": \"the-rule\", \"description\": \"The one rule.\", \"when\": {\"op\": \"fact\", \"path\": \"/go\", \"operator\": \"equals\", \"value\": true}, \"outcome\": \"approve\", \"onUnknown\": \"ignore\"}]}",
+   "facts": "{\"go\": true}",
+   "evidenceAvailability": null,
+   "expected": {
+    "errorClass": "pack-not-conformant"
+   },
+   "note": null
+  },
+  {
+   "id": "document-name-on-outcome-and-rule",
+   "origin": "Conformance, document cases, negative: the name on an outcome and on a rule as well",
+   "optIn": true,
+   "pack": "{\"specVersion\": \"0.2.0-draft\", \"id\": \"https://example.invalid/judgment-packs/rfc0016-row\", \"version\": \"0.1.0\", \"title\": \"Synthetic draft RFC 0016 row\", \"description\": \"Invented content for specification testing; it authorizes nothing.\", \"decision\": {\"intent\": \"Exercise one draft RFC 0016 declaration against one facts document.\", \"question\": \"Is the outcome produced, and with which values?\"}, \"metadata\": {\"requiredExtensions\": [\"org.judgmentpack.outcome-values\"]},  \"outcomes\": [{\"id\": \"approve\", \"label\": \"An outcome\", \"extensions\": {\"org.judgmentpack.outcome-values\": {\"refundAmount\": {\"type\": \"decimal\", \"fromFact\": \"/proposed/refundAmount\"}, \"currency\": {\"type\": \"string\", \"constant\": \"CAD\"}}}}, {\"id\": \"decline\", \"label\": \"An outcome\"}], \"rules\": [{\"id\": \"the-rule\", \"description\": \"The one rule.\", \"when\": {\"op\": \"fact\", \"path\": \"/go\", \"operator\": \"equals\", \"value\": true}, \"outcome\": \"approve\", \"onUnknown\": \"ignore\", \"extensions\": {\"org.judgmentpack.outcome-values\": {\"refundAmount\": {\"type\": \"decimal\", \"fromFact\": \"/proposed/refundAmount\"}, \"currency\": {\"type\": \"string\", \"constant\": \"CAD\"}}}}]}",
+   "facts": "{\"go\": true, \"proposed\": {\"refundAmount\": \"149.50\"}}",
+   "evidenceAvailability": null,
+   "expected": {
+    "errorClass": "pack-not-conformant"
+   },
+   "note": null
+  },
+  {
+   "id": "evaluation-constant-by-true-rule",
+   "origin": "Conformance, evaluation rows, positive: a constant carried on an outcome produced by a true rule",
+   "optIn": true,
+   "pack": "{\"specVersion\": \"0.2.0-draft\", \"id\": \"https://example.invalid/judgment-packs/rfc0016-row\", \"version\": \"0.1.0\", \"title\": \"Synthetic draft RFC 0016 row\", \"description\": \"Invented content for specification testing; it authorizes nothing.\", \"decision\": {\"intent\": \"Exercise one draft RFC 0016 declaration against one facts document.\", \"question\": \"Is the outcome produced, and with which values?\"}, \"metadata\": {\"requiredExtensions\": [\"org.judgmentpack.outcome-values\"]},  \"outcomes\": [{\"id\": \"approve\", \"label\": \"An outcome\", \"extensions\": {\"org.judgmentpack.outcome-values\": {\"creditLimit\": {\"type\": \"decimal\", \"constant\": \"5000\"}}}}, {\"id\": \"decline\", \"label\": \"An outcome\"}], \"rules\": [{\"id\": \"the-rule\", \"description\": \"The one rule.\", \"when\": {\"op\": \"fact\", \"path\": \"/go\", \"operator\": \"equals\", \"value\": true}, \"outcome\": \"approve\", \"onUnknown\": \"ignore\"}]}",
+   "facts": "{\"go\": true, \"amount\": \"149.50\"}",
+   "evidenceAvailability": null,
+   "expected": {
+    "disposition": "{\"handoff\":{\"state\":\"none\"},\"kind\":\"outcome\",\"outcomeId\":\"approve\",\"reasons\":[],\"value\":{\"creditLimit\":\"5000\"}}"
+   },
+   "note": null
+  },
+  {
+   "id": "evaluation-constant-by-forced-outcome",
+   "origin": "Conformance, evaluation rows, positive: a constant carried on an outcome produced by a forced outcome",
+   "optIn": true,
+   "pack": "{\"specVersion\": \"0.2.0-draft\", \"id\": \"https://example.invalid/judgment-packs/rfc0016-row\", \"version\": \"0.1.0\", \"title\": \"Synthetic draft RFC 0016 row\", \"description\": \"Invented content for specification testing; it authorizes nothing.\", \"decision\": {\"intent\": \"Exercise one draft RFC 0016 declaration against one facts document.\", \"question\": \"Is the outcome produced, and with which values?\"}, \"metadata\": {\"requiredExtensions\": [\"org.judgmentpack.outcome-values\"]}, \"exceptions\": [{\"id\": \"the-exception\", \"description\": \"Forces the outcome.\", \"when\": {\"op\": \"fact\", \"path\": \"/force\", \"operator\": \"equals\", \"value\": true}, \"effect\": \"force-outcome\", \"outcome\": \"approve\", \"onUnknown\": \"ignore\"}], \"outcomes\": [{\"id\": \"approve\", \"label\": \"An outcome\", \"extensions\": {\"org.judgmentpack.outcome-values\": {\"creditLimit\": {\"type\": \"decimal\", \"constant\": \"5000\"}}}}, {\"id\": \"decline\", \"label\": \"An outcome\"}], \"rules\": [{\"id\": \"the-rule\", \"description\": \"The one rule.\", \"when\": {\"op\": \"fact\", \"path\": \"/go\", \"operator\": \"equals\", \"value\": true}, \"outcome\": \"decline\", \"onUnknown\": \"ignore\"}]}",
+   "facts": "{\"go\": true, \"force\": true, \"amount\": \"149.50\"}",
+   "evidenceAvailability": null,
+   "expected": {
+    "disposition": "{\"handoff\":{\"state\":\"none\"},\"kind\":\"outcome\",\"outcomeId\":\"approve\",\"reasons\":[],\"value\":{\"creditLimit\":\"5000\"}}"
+   },
+   "note": null
+  },
+  {
+   "id": "evaluation-constant-by-fallback",
+   "origin": "Conformance, evaluation rows, positive: a constant carried on an outcome produced by fallbackOutcome",
+   "optIn": true,
+   "pack": "{\"specVersion\": \"0.2.0-draft\", \"id\": \"https://example.invalid/judgment-packs/rfc0016-row\", \"version\": \"0.1.0\", \"title\": \"Synthetic draft RFC 0016 row\", \"description\": \"Invented content for specification testing; it authorizes nothing.\", \"decision\": {\"intent\": \"Exercise one draft RFC 0016 declaration against one facts document.\", \"question\": \"Is the outcome produced, and with which values?\"}, \"metadata\": {\"requiredExtensions\": [\"org.judgmentpack.outcome-values\"]}, \"fallbackOutcome\": \"approve\", \"outcomes\": [{\"id\": \"approve\", \"label\": \"An outcome\", \"extensions\": {\"org.judgmentpack.outcome-values\": {\"creditLimit\": {\"type\": \"decimal\", \"constant\": \"5000\"}}}}, {\"id\": \"decline\", \"label\": \"An outcome\"}], \"rules\": [{\"id\": \"the-rule\", \"description\": \"The one rule.\", \"when\": {\"op\": \"fact\", \"path\": \"/go\", \"operator\": \"equals\", \"value\": true}, \"outcome\": \"decline\", \"onUnknown\": \"ignore\"}]}",
+   "facts": "{\"go\": false, \"amount\": \"149.50\"}",
+   "evidenceAvailability": null,
+   "expected": {
+    "disposition": "{\"handoff\":{\"state\":\"none\"},\"kind\":\"outcome\",\"outcomeId\":\"approve\",\"reasons\":[],\"value\":{\"creditLimit\":\"5000\"}}"
+   },
+   "note": null
+  },
+  {
+   "id": "evaluation-from-fact-string",
+   "origin": "Conformance, evaluation rows, positive: a fromFact that resolves, of type string",
+   "optIn": true,
+   "pack": "{\"specVersion\": \"0.2.0-draft\", \"id\": \"https://example.invalid/judgment-packs/rfc0016-row\", \"version\": \"0.1.0\", \"title\": \"Synthetic draft RFC 0016 row\", \"description\": \"Invented content for specification testing; it authorizes nothing.\", \"decision\": {\"intent\": \"Exercise one draft RFC 0016 declaration against one facts document.\", \"question\": \"Is the outcome produced, and with which values?\"}, \"metadata\": {\"requiredExtensions\": [\"org.judgmentpack.outcome-values\"]},  \"outcomes\": [{\"id\": \"approve\", \"label\": \"An outcome\", \"extensions\": {\"org.judgmentpack.outcome-values\": {\"v\": {\"type\": \"string\", \"fromFact\": \"/selected\"}}}}, {\"id\": \"decline\", \"label\": \"An outcome\"}], \"rules\": [{\"id\": \"the-rule\", \"description\": \"The one rule.\", \"when\": {\"op\": \"fact\", \"path\": \"/go\", \"operator\": \"equals\", \"value\": true}, \"outcome\": \"approve\", \"onUnknown\": \"ignore\"}]}",
+   "facts": "{\"go\": true, \"selected\": \"CAD\"}",
+   "evidenceAvailability": null,
+   "expected": {
+    "disposition": "{\"handoff\":{\"state\":\"none\"},\"kind\":\"outcome\",\"outcomeId\":\"approve\",\"reasons\":[],\"value\":{\"v\":\"CAD\"}}"
+   },
+   "note": null
+  },
+  {
+   "id": "evaluation-from-fact-decimal",
+   "origin": "Conformance, evaluation rows, positive: a fromFact that resolves, of type decimal",
+   "optIn": true,
+   "pack": "{\"specVersion\": \"0.2.0-draft\", \"id\": \"https://example.invalid/judgment-packs/rfc0016-row\", \"version\": \"0.1.0\", \"title\": \"Synthetic draft RFC 0016 row\", \"description\": \"Invented content for specification testing; it authorizes nothing.\", \"decision\": {\"intent\": \"Exercise one draft RFC 0016 declaration against one facts document.\", \"question\": \"Is the outcome produced, and with which values?\"}, \"metadata\": {\"requiredExtensions\": [\"org.judgmentpack.outcome-values\"]},  \"outcomes\": [{\"id\": \"approve\", \"label\": \"An outcome\", \"extensions\": {\"org.judgmentpack.outcome-values\": {\"v\": {\"type\": \"decimal\", \"fromFact\": \"/selected\"}}}}, {\"id\": \"decline\", \"label\": \"An outcome\"}], \"rules\": [{\"id\": \"the-rule\", \"description\": \"The one rule.\", \"when\": {\"op\": \"fact\", \"path\": \"/go\", \"operator\": \"equals\", \"value\": true}, \"outcome\": \"approve\", \"onUnknown\": \"ignore\"}]}",
+   "facts": "{\"go\": true, \"selected\": \"149.50\"}",
+   "evidenceAvailability": null,
+   "expected": {
+    "disposition": "{\"handoff\":{\"state\":\"none\"},\"kind\":\"outcome\",\"outcomeId\":\"approve\",\"reasons\":[],\"value\":{\"v\":\"149.50\"}}"
+   },
+   "note": null
+  },
+  {
+   "id": "evaluation-from-fact-boolean",
+   "origin": "Conformance, evaluation rows, positive: a fromFact that resolves, of type boolean",
+   "optIn": true,
+   "pack": "{\"specVersion\": \"0.2.0-draft\", \"id\": \"https://example.invalid/judgment-packs/rfc0016-row\", \"version\": \"0.1.0\", \"title\": \"Synthetic draft RFC 0016 row\", \"description\": \"Invented content for specification testing; it authorizes nothing.\", \"decision\": {\"intent\": \"Exercise one draft RFC 0016 declaration against one facts document.\", \"question\": \"Is the outcome produced, and with which values?\"}, \"metadata\": {\"requiredExtensions\": [\"org.judgmentpack.outcome-values\"]},  \"outcomes\": [{\"id\": \"approve\", \"label\": \"An outcome\", \"extensions\": {\"org.judgmentpack.outcome-values\": {\"v\": {\"type\": \"boolean\", \"fromFact\": \"/selected\"}}}}, {\"id\": \"decline\", \"label\": \"An outcome\"}], \"rules\": [{\"id\": \"the-rule\", \"description\": \"The one rule.\", \"when\": {\"op\": \"fact\", \"path\": \"/go\", \"operator\": \"equals\", \"value\": true}, \"outcome\": \"approve\", \"onUnknown\": \"ignore\"}]}",
+   "facts": "{\"go\": true, \"selected\": true}",
+   "evidenceAvailability": null,
+   "expected": {
+    "disposition": "{\"handoff\":{\"state\":\"none\"},\"kind\":\"outcome\",\"outcomeId\":\"approve\",\"reasons\":[],\"value\":{\"v\":true}}"
+   },
+   "note": null
+  },
+  {
+   "id": "evaluation-unresolved-by-true-rule",
+   "origin": "Conformance, evaluation rows, negative: a fromFact whose pointer does not resolve, on an outcome produced by a true rule",
+   "optIn": true,
+   "pack": "{\"specVersion\": \"0.2.0-draft\", \"id\": \"https://example.invalid/judgment-packs/rfc0016-row\", \"version\": \"0.1.0\", \"title\": \"Synthetic draft RFC 0016 row\", \"description\": \"Invented content for specification testing; it authorizes nothing.\", \"decision\": {\"intent\": \"Exercise one draft RFC 0016 declaration against one facts document.\", \"question\": \"Is the outcome produced, and with which values?\"}, \"metadata\": {\"requiredExtensions\": [\"org.judgmentpack.outcome-values\"]},  \"outcomes\": [{\"id\": \"approve\", \"label\": \"An outcome\", \"extensions\": {\"org.judgmentpack.outcome-values\": {\"refundAmount\": {\"type\": \"decimal\", \"fromFact\": \"/missing\"}}}}, {\"id\": \"decline\", \"label\": \"An outcome\"}], \"rules\": [{\"id\": \"the-rule\", \"description\": \"The one rule.\", \"when\": {\"op\": \"fact\", \"path\": \"/go\", \"operator\": \"equals\", \"value\": true}, \"outcome\": \"approve\", \"onUnknown\": \"ignore\"}]}",
+   "facts": "{\"go\": true, \"amount\": \"149.50\"}",
+   "evidenceAvailability": null,
+   "expected": {
+    "disposition": "{\"handoff\":{\"state\":\"none\"},\"kind\":\"unresolved\",\"reasons\":[\"unknown\"]}"
+   },
+   "note": null
+  },
+  {
+   "id": "evaluation-unresolved-by-forced-outcome",
+   "origin": "Conformance, evaluation rows, negative: a fromFact whose pointer does not resolve, on an outcome produced by a forced outcome",
+   "optIn": true,
+   "pack": "{\"specVersion\": \"0.2.0-draft\", \"id\": \"https://example.invalid/judgment-packs/rfc0016-row\", \"version\": \"0.1.0\", \"title\": \"Synthetic draft RFC 0016 row\", \"description\": \"Invented content for specification testing; it authorizes nothing.\", \"decision\": {\"intent\": \"Exercise one draft RFC 0016 declaration against one facts document.\", \"question\": \"Is the outcome produced, and with which values?\"}, \"metadata\": {\"requiredExtensions\": [\"org.judgmentpack.outcome-values\"]}, \"exceptions\": [{\"id\": \"the-exception\", \"description\": \"Forces the outcome.\", \"when\": {\"op\": \"fact\", \"path\": \"/force\", \"operator\": \"equals\", \"value\": true}, \"effect\": \"force-outcome\", \"outcome\": \"approve\", \"onUnknown\": \"ignore\"}], \"outcomes\": [{\"id\": \"approve\", \"label\": \"An outcome\", \"extensions\": {\"org.judgmentpack.outcome-values\": {\"refundAmount\": {\"type\": \"decimal\", \"fromFact\": \"/missing\"}}}}, {\"id\": \"decline\", \"label\": \"An outcome\"}], \"rules\": [{\"id\": \"the-rule\", \"description\": \"The one rule.\", \"when\": {\"op\": \"fact\", \"path\": \"/go\", \"operator\": \"equals\", \"value\": true}, \"outcome\": \"decline\", \"onUnknown\": \"ignore\"}]}",
+   "facts": "{\"go\": true, \"force\": true, \"amount\": \"149.50\"}",
+   "evidenceAvailability": null,
+   "expected": {
+    "disposition": "{\"handoff\":{\"state\":\"none\"},\"kind\":\"unresolved\",\"reasons\":[\"unknown\"]}"
+   },
+   "note": null
+  },
+  {
+   "id": "evaluation-unresolved-by-fallback",
+   "origin": "Conformance, evaluation rows, negative: a fromFact whose pointer does not resolve, on an outcome produced by fallbackOutcome",
+   "optIn": true,
+   "pack": "{\"specVersion\": \"0.2.0-draft\", \"id\": \"https://example.invalid/judgment-packs/rfc0016-row\", \"version\": \"0.1.0\", \"title\": \"Synthetic draft RFC 0016 row\", \"description\": \"Invented content for specification testing; it authorizes nothing.\", \"decision\": {\"intent\": \"Exercise one draft RFC 0016 declaration against one facts document.\", \"question\": \"Is the outcome produced, and with which values?\"}, \"metadata\": {\"requiredExtensions\": [\"org.judgmentpack.outcome-values\"]}, \"fallbackOutcome\": \"approve\", \"outcomes\": [{\"id\": \"approve\", \"label\": \"An outcome\", \"extensions\": {\"org.judgmentpack.outcome-values\": {\"refundAmount\": {\"type\": \"decimal\", \"fromFact\": \"/missing\"}}}}, {\"id\": \"decline\", \"label\": \"An outcome\"}], \"rules\": [{\"id\": \"the-rule\", \"description\": \"The one rule.\", \"when\": {\"op\": \"fact\", \"path\": \"/go\", \"operator\": \"equals\", \"value\": true}, \"outcome\": \"decline\", \"onUnknown\": \"ignore\"}]}",
+   "facts": "{\"go\": false, \"amount\": \"149.50\"}",
+   "evidenceAvailability": null,
+   "expected": {
+    "disposition": "{\"handoff\":{\"state\":\"none\"},\"kind\":\"unresolved\",\"reasons\":[\"unknown\"]}"
+   },
+   "note": null
+  },
+  {
+   "id": "evaluation-two-values-one-unresolved",
+   "origin": "Conformance, evaluation rows, negative: two values of which one does not resolve, where the disposition carries no value member at all",
+   "optIn": true,
+   "pack": "{\"specVersion\": \"0.2.0-draft\", \"id\": \"https://example.invalid/judgment-packs/rfc0016-row\", \"version\": \"0.1.0\", \"title\": \"Synthetic draft RFC 0016 row\", \"description\": \"Invented content for specification testing; it authorizes nothing.\", \"decision\": {\"intent\": \"Exercise one draft RFC 0016 declaration against one facts document.\", \"question\": \"Is the outcome produced, and with which values?\"}, \"metadata\": {\"requiredExtensions\": [\"org.judgmentpack.outcome-values\"]},  \"outcomes\": [{\"id\": \"approve\", \"label\": \"An outcome\", \"extensions\": {\"org.judgmentpack.outcome-values\": {\"refundAmount\": {\"type\": \"decimal\", \"fromFact\": \"/proposed/refundAmount\"}, \"currency\": {\"type\": \"string\", \"constant\": \"CAD\"}}}}, {\"id\": \"decline\", \"label\": \"An outcome\"}], \"rules\": [{\"id\": \"the-rule\", \"description\": \"The one rule.\", \"when\": {\"op\": \"fact\", \"path\": \"/go\", \"operator\": \"equals\", \"value\": true}, \"outcome\": \"approve\", \"onUnknown\": \"ignore\"}]}",
+   "facts": "{\"go\": true}",
+   "evidenceAvailability": null,
+   "expected": {
+    "disposition": "{\"handoff\":{\"state\":\"none\"},\"kind\":\"unresolved\",\"reasons\":[\"unknown\"]}"
+   },
+   "note": null
+  },
+  {
+   "id": "evaluation-not-applicable",
+   "origin": "Conformance, evaluation rows, negative: a not-applicable result, carrying no value",
+   "optIn": true,
+   "pack": "{\"specVersion\": \"0.2.0-draft\", \"id\": \"https://example.invalid/judgment-packs/rfc0016-row\", \"version\": \"0.1.0\", \"title\": \"Synthetic draft RFC 0016 row\", \"description\": \"Invented content for specification testing; it authorizes nothing.\", \"decision\": {\"intent\": \"Exercise one draft RFC 0016 declaration against one facts document.\", \"question\": \"Is the outcome produced, and with which values?\"}, \"metadata\": {\"requiredExtensions\": [\"org.judgmentpack.outcome-values\"]}, \"applicability\": {\"op\": \"fact\", \"path\": \"/inScope\", \"operator\": \"equals\", \"value\": true}, \"outcomes\": [{\"id\": \"approve\", \"label\": \"An outcome\", \"extensions\": {\"org.judgmentpack.outcome-values\": {\"refundAmount\": {\"type\": \"decimal\", \"fromFact\": \"/proposed/refundAmount\"}, \"currency\": {\"type\": \"string\", \"constant\": \"CAD\"}}}}, {\"id\": \"decline\", \"label\": \"An outcome\"}], \"rules\": [{\"id\": \"the-rule\", \"description\": \"The one rule.\", \"when\": {\"op\": \"fact\", \"path\": \"/go\", \"operator\": \"equals\", \"value\": true}, \"outcome\": \"approve\", \"onUnknown\": \"ignore\"}]}",
+   "facts": "{\"go\": true, \"inScope\": false, \"proposed\": {\"refundAmount\": \"1\"}}",
+   "evidenceAvailability": null,
+   "expected": {
+    "disposition": "{\"handoff\":{\"state\":\"none\"},\"kind\":\"not-applicable\",\"reasons\":[\"not-applicable\"]}"
+   },
+   "note": null
+  },
+  {
+   "id": "evaluation-unresolved-result",
+   "origin": "Conformance, evaluation rows, negative: an unresolved result, carrying no value",
+   "optIn": true,
+   "pack": "{\"specVersion\": \"0.2.0-draft\", \"id\": \"https://example.invalid/judgment-packs/rfc0016-row\", \"version\": \"0.1.0\", \"title\": \"Synthetic draft RFC 0016 row\", \"description\": \"Invented content for specification testing; it authorizes nothing.\", \"decision\": {\"intent\": \"Exercise one draft RFC 0016 declaration against one facts document.\", \"question\": \"Is the outcome produced, and with which values?\"}, \"metadata\": {\"requiredExtensions\": [\"org.judgmentpack.outcome-values\"]},  \"outcomes\": [{\"id\": \"approve\", \"label\": \"An outcome\", \"extensions\": {\"org.judgmentpack.outcome-values\": {\"refundAmount\": {\"type\": \"decimal\", \"fromFact\": \"/proposed/refundAmount\"}, \"currency\": {\"type\": \"string\", \"constant\": \"CAD\"}}}}, {\"id\": \"decline\", \"label\": \"An outcome\"}], \"rules\": [{\"id\": \"the-rule\", \"description\": \"The one rule.\", \"when\": {\"op\": \"fact\", \"path\": \"/go\", \"operator\": \"equals\", \"value\": true}, \"outcome\": \"approve\", \"onUnknown\": \"ignore\"}]}",
+   "facts": "{\"go\": false, \"proposed\": {\"refundAmount\": \"1\"}}",
+   "evidenceAvailability": null,
+   "expected": {
+    "disposition": "{\"handoff\":{\"state\":\"none\"},\"kind\":\"unresolved\",\"reasons\":[\"no-match\"]}"
+   },
+   "note": null
+  },
+  {
+   "id": "handoff-triggers-name-unknown",
+   "origin": "Conformance, evaluation rows, handoff: a value that does not resolve in a pack whose escalation.triggers name unknown",
+   "optIn": true,
+   "pack": "{\"specVersion\": \"0.2.0-draft\", \"id\": \"https://example.invalid/judgment-packs/rfc0016-row\", \"version\": \"0.1.0\", \"title\": \"Synthetic draft RFC 0016 row\", \"description\": \"Invented content for specification testing; it authorizes nothing.\", \"decision\": {\"intent\": \"Exercise one draft RFC 0016 declaration against one facts document.\", \"question\": \"Is the outcome produced, and with which values?\"}, \"metadata\": {\"requiredExtensions\": [\"org.judgmentpack.outcome-values\"]}, \"escalation\": {\"triggers\": [\"unknown\"], \"target\": {\"kind\": \"queue\", \"name\": \"refund-review\"}}, \"outcomes\": [{\"id\": \"approve\", \"label\": \"An outcome\", \"extensions\": {\"org.judgmentpack.outcome-values\": {\"refundAmount\": {\"type\": \"decimal\", \"fromFact\": \"/missing\"}}}}, {\"id\": \"decline\", \"label\": \"An outcome\"}], \"rules\": [{\"id\": \"the-rule\", \"description\": \"The one rule.\", \"when\": {\"op\": \"fact\", \"path\": \"/go\", \"operator\": \"equals\", \"value\": true}, \"outcome\": \"approve\", \"onUnknown\": \"ignore\"}]}",
+   "facts": "{\"go\": true}",
+   "evidenceAvailability": null,
+   "expected": {
+    "disposition": "{\"handoff\":{\"state\":\"requested\",\"triggeredBy\":[\"unknown\"]},\"kind\":\"unresolved\",\"reasons\":[\"unknown\"]}"
+   },
+   "note": null
+  },
+  {
+   "id": "handoff-triggers-do-not-name-unknown",
+   "origin": "Conformance, evaluation rows, handoff: a value that does not resolve in a pack whose triggers do not name it",
+   "optIn": true,
+   "pack": "{\"specVersion\": \"0.2.0-draft\", \"id\": \"https://example.invalid/judgment-packs/rfc0016-row\", \"version\": \"0.1.0\", \"title\": \"Synthetic draft RFC 0016 row\", \"description\": \"Invented content for specification testing; it authorizes nothing.\", \"decision\": {\"intent\": \"Exercise one draft RFC 0016 declaration against one facts document.\", \"question\": \"Is the outcome produced, and with which values?\"}, \"metadata\": {\"requiredExtensions\": [\"org.judgmentpack.outcome-values\"]}, \"escalation\": {\"triggers\": [\"conflict\", \"no-match\"], \"target\": {\"kind\": \"queue\", \"name\": \"refund-review\"}}, \"outcomes\": [{\"id\": \"approve\", \"label\": \"An outcome\", \"extensions\": {\"org.judgmentpack.outcome-values\": {\"refundAmount\": {\"type\": \"decimal\", \"fromFact\": \"/missing\"}}}}, {\"id\": \"decline\", \"label\": \"An outcome\"}], \"rules\": [{\"id\": \"the-rule\", \"description\": \"The one rule.\", \"when\": {\"op\": \"fact\", \"path\": \"/go\", \"operator\": \"equals\", \"value\": true}, \"outcome\": \"approve\", \"onUnknown\": \"ignore\"}]}",
+   "facts": "{\"go\": true}",
+   "evidenceAvailability": null,
+   "expected": {
+    "disposition": "{\"handoff\":{\"state\":\"none\"},\"kind\":\"unresolved\",\"reasons\":[\"unknown\"]}"
+   },
+   "note": null
+  },
+  {
+   "id": "handoff-no-escalation-object",
+   "origin": "Conformance, evaluation rows, handoff: a value that does not resolve in a pack with no escalation object",
+   "optIn": true,
+   "pack": "{\"specVersion\": \"0.2.0-draft\", \"id\": \"https://example.invalid/judgment-packs/rfc0016-row\", \"version\": \"0.1.0\", \"title\": \"Synthetic draft RFC 0016 row\", \"description\": \"Invented content for specification testing; it authorizes nothing.\", \"decision\": {\"intent\": \"Exercise one draft RFC 0016 declaration against one facts document.\", \"question\": \"Is the outcome produced, and with which values?\"}, \"metadata\": {\"requiredExtensions\": [\"org.judgmentpack.outcome-values\"]},  \"outcomes\": [{\"id\": \"approve\", \"label\": \"An outcome\", \"extensions\": {\"org.judgmentpack.outcome-values\": {\"refundAmount\": {\"type\": \"decimal\", \"fromFact\": \"/missing\"}}}}, {\"id\": \"decline\", \"label\": \"An outcome\"}], \"rules\": [{\"id\": \"the-rule\", \"description\": \"The one rule.\", \"when\": {\"op\": \"fact\", \"path\": \"/go\", \"operator\": \"equals\", \"value\": true}, \"outcome\": \"approve\", \"onUnknown\": \"ignore\"}]}",
+   "facts": "{\"go\": true}",
+   "evidenceAvailability": null,
+   "expected": {
+    "disposition": "{\"handoff\":{\"state\":\"none\"},\"kind\":\"unresolved\",\"reasons\":[\"unknown\"]}"
+   },
+   "note": null
+  },
+  {
+   "id": "boundary-trailing-zeroes",
+   "origin": "Conformance, evaluation rows, boundary: a decimal with trailing zeroes copied unchanged",
+   "optIn": true,
+   "pack": "{\"specVersion\": \"0.2.0-draft\", \"id\": \"https://example.invalid/judgment-packs/rfc0016-row\", \"version\": \"0.1.0\", \"title\": \"Synthetic draft RFC 0016 row\", \"description\": \"Invented content for specification testing; it authorizes nothing.\", \"decision\": {\"intent\": \"Exercise one draft RFC 0016 declaration against one facts document.\", \"question\": \"Is the outcome produced, and with which values?\"}, \"metadata\": {\"requiredExtensions\": [\"org.judgmentpack.outcome-values\"]},  \"outcomes\": [{\"id\": \"approve\", \"label\": \"An outcome\", \"extensions\": {\"org.judgmentpack.outcome-values\": {\"v\": {\"type\": \"decimal\", \"fromFact\": \"/selected\"}}}}, {\"id\": \"decline\", \"label\": \"An outcome\"}], \"rules\": [{\"id\": \"the-rule\", \"description\": \"The one rule.\", \"when\": {\"op\": \"fact\", \"path\": \"/go\", \"operator\": \"equals\", \"value\": true}, \"outcome\": \"approve\", \"onUnknown\": \"ignore\"}]}",
+   "facts": "{\"go\": true, \"selected\": \"0.10\"}",
+   "evidenceAvailability": null,
+   "expected": {
+    "disposition": "{\"handoff\":{\"state\":\"none\"},\"kind\":\"outcome\",\"outcomeId\":\"approve\",\"reasons\":[],\"value\":{\"v\":\"0.10\"}}"
+   },
+   "note": null
+  },
+  {
+   "id": "boundary-empty-string",
+   "origin": "Conformance, evaluation rows, boundary: the empty string as a string value",
+   "optIn": true,
+   "pack": "{\"specVersion\": \"0.2.0-draft\", \"id\": \"https://example.invalid/judgment-packs/rfc0016-row\", \"version\": \"0.1.0\", \"title\": \"Synthetic draft RFC 0016 row\", \"description\": \"Invented content for specification testing; it authorizes nothing.\", \"decision\": {\"intent\": \"Exercise one draft RFC 0016 declaration against one facts document.\", \"question\": \"Is the outcome produced, and with which values?\"}, \"metadata\": {\"requiredExtensions\": [\"org.judgmentpack.outcome-values\"]},  \"outcomes\": [{\"id\": \"approve\", \"label\": \"An outcome\", \"extensions\": {\"org.judgmentpack.outcome-values\": {\"v\": {\"type\": \"string\", \"fromFact\": \"/selected\"}}}}, {\"id\": \"decline\", \"label\": \"An outcome\"}], \"rules\": [{\"id\": \"the-rule\", \"description\": \"The one rule.\", \"when\": {\"op\": \"fact\", \"path\": \"/go\", \"operator\": \"equals\", \"value\": true}, \"outcome\": \"approve\", \"onUnknown\": \"ignore\"}]}",
+   "facts": "{\"go\": true, \"selected\": \"\"}",
+   "evidenceAvailability": null,
+   "expected": {
+    "disposition": "{\"handoff\":{\"state\":\"none\"},\"kind\":\"outcome\",\"outcomeId\":\"approve\",\"reasons\":[],\"value\":{\"v\":\"\"}}"
+   },
+   "note": null
+  },
+  {
+   "id": "boundary-false",
+   "origin": "Conformance, evaluation rows, boundary: the Boolean false",
+   "optIn": true,
+   "pack": "{\"specVersion\": \"0.2.0-draft\", \"id\": \"https://example.invalid/judgment-packs/rfc0016-row\", \"version\": \"0.1.0\", \"title\": \"Synthetic draft RFC 0016 row\", \"description\": \"Invented content for specification testing; it authorizes nothing.\", \"decision\": {\"intent\": \"Exercise one draft RFC 0016 declaration against one facts document.\", \"question\": \"Is the outcome produced, and with which values?\"}, \"metadata\": {\"requiredExtensions\": [\"org.judgmentpack.outcome-values\"]},  \"outcomes\": [{\"id\": \"approve\", \"label\": \"An outcome\", \"extensions\": {\"org.judgmentpack.outcome-values\": {\"v\": {\"type\": \"boolean\", \"fromFact\": \"/selected\"}}}}, {\"id\": \"decline\", \"label\": \"An outcome\"}], \"rules\": [{\"id\": \"the-rule\", \"description\": \"The one rule.\", \"when\": {\"op\": \"fact\", \"path\": \"/go\", \"operator\": \"equals\", \"value\": true}, \"outcome\": \"approve\", \"onUnknown\": \"ignore\"}]}",
+   "facts": "{\"go\": true, \"selected\": false}",
+   "evidenceAvailability": null,
+   "expected": {
+    "disposition": "{\"handoff\":{\"state\":\"none\"},\"kind\":\"outcome\",\"outcomeId\":\"approve\",\"reasons\":[],\"value\":{\"v\":false}}"
+   },
+   "note": null
+  },
+  {
+   "id": "boundary-two-true-rules",
+   "origin": "Conformance, evaluation rows, boundary: two true rules naming the same outcome, which carries its values once",
+   "optIn": true,
+   "pack": "{\"specVersion\": \"0.2.0-draft\", \"id\": \"https://example.invalid/judgment-packs/rfc0016-row\", \"version\": \"0.1.0\", \"title\": \"Synthetic draft RFC 0016 row\", \"description\": \"Invented content for specification testing; it authorizes nothing.\", \"decision\": {\"intent\": \"Exercise one draft RFC 0016 declaration against one facts document.\", \"question\": \"Is the outcome produced, and with which values?\"}, \"metadata\": {\"requiredExtensions\": [\"org.judgmentpack.outcome-values\"]},  \"outcomes\": [{\"id\": \"approve\", \"label\": \"An outcome\", \"extensions\": {\"org.judgmentpack.outcome-values\": {\"refundAmount\": {\"type\": \"decimal\", \"fromFact\": \"/proposed/refundAmount\"}, \"currency\": {\"type\": \"string\", \"constant\": \"CAD\"}}}}, {\"id\": \"decline\", \"label\": \"An outcome\"}], \"rules\": [{\"id\": \"the-rule\", \"description\": \"The one rule.\", \"when\": {\"op\": \"fact\", \"path\": \"/go\", \"operator\": \"equals\", \"value\": true}, \"outcome\": \"approve\", \"onUnknown\": \"ignore\"}, {\"id\": \"the-other\", \"description\": \"Another rule.\", \"when\": {\"op\": \"literal\", \"value\": true}, \"outcome\": \"approve\", \"onUnknown\": \"ignore\"}]}",
+   "facts": "{\"go\": true, \"proposed\": {\"refundAmount\": \"149.50\"}}",
+   "evidenceAvailability": null,
+   "expected": {
+    "disposition": "{\"handoff\":{\"state\":\"none\"},\"kind\":\"outcome\",\"outcomeId\":\"approve\",\"reasons\":[],\"value\":{\"currency\":\"CAD\",\"refundAmount\":\"149.50\"}}"
+   },
+   "note": null
+  },
+  {
+   "id": "boundary-members-in-another-order",
+   "origin": "Conformance, evaluation rows, boundary: the same declaration with its members authored in another order",
+   "optIn": true,
+   "pack": "{\"specVersion\": \"0.2.0-draft\", \"id\": \"https://example.invalid/judgment-packs/rfc0016-row\", \"version\": \"0.1.0\", \"title\": \"Synthetic draft RFC 0016 row\", \"description\": \"Invented content for specification testing; it authorizes nothing.\", \"decision\": {\"intent\": \"Exercise one draft RFC 0016 declaration against one facts document.\", \"question\": \"Is the outcome produced, and with which values?\"}, \"metadata\": {\"requiredExtensions\": [\"org.judgmentpack.outcome-values\"]},  \"outcomes\": [{\"id\": \"approve\", \"label\": \"An outcome\", \"extensions\": {\"org.judgmentpack.outcome-values\": {\"currency\": {\"constant\": \"CAD\", \"type\": \"string\"}, \"refundAmount\": {\"fromFact\": \"/proposed/refundAmount\", \"type\": \"decimal\"}}}}, {\"id\": \"decline\", \"label\": \"An outcome\"}], \"rules\": [{\"id\": \"the-rule\", \"description\": \"The one rule.\", \"when\": {\"op\": \"fact\", \"path\": \"/go\", \"operator\": \"equals\", \"value\": true}, \"outcome\": \"approve\", \"onUnknown\": \"ignore\"}]}",
+   "facts": "{\"go\": true, \"proposed\": {\"refundAmount\": \"149.50\"}}",
+   "evidenceAvailability": null,
+   "expected": {
+    "disposition": "{\"handoff\":{\"state\":\"none\"},\"kind\":\"outcome\",\"outcomeId\":\"approve\",\"reasons\":[],\"value\":{\"currency\":\"CAD\",\"refundAmount\":\"149.50\"}}"
+   },
+   "note": "The expected bytes are those of document-mixed, to the byte."
+  },
+  {
+   "id": "adversarial-decimal-fact-json-number",
+   "origin": "Conformance, evaluation rows, adversarial: where decimal is declared, a fact given as a JSON number",
+   "optIn": true,
+   "pack": "{\"specVersion\": \"0.2.0-draft\", \"id\": \"https://example.invalid/judgment-packs/rfc0016-row\", \"version\": \"0.1.0\", \"title\": \"Synthetic draft RFC 0016 row\", \"description\": \"Invented content for specification testing; it authorizes nothing.\", \"decision\": {\"intent\": \"Exercise one draft RFC 0016 declaration against one facts document.\", \"question\": \"Is the outcome produced, and with which values?\"}, \"metadata\": {\"requiredExtensions\": [\"org.judgmentpack.outcome-values\"]},  \"outcomes\": [{\"id\": \"approve\", \"label\": \"An outcome\", \"extensions\": {\"org.judgmentpack.outcome-values\": {\"v\": {\"type\": \"decimal\", \"fromFact\": \"/selected\"}}}}, {\"id\": \"decline\", \"label\": \"An outcome\"}], \"rules\": [{\"id\": \"the-rule\", \"description\": \"The one rule.\", \"when\": {\"op\": \"fact\", \"path\": \"/go\", \"operator\": \"equals\", \"value\": true}, \"outcome\": \"approve\", \"onUnknown\": \"ignore\"}]}",
+   "facts": "{\"go\": true, \"selected\": 149.5}",
+   "evidenceAvailability": null,
+   "expected": {
+    "disposition": "{\"handoff\":{\"state\":\"none\"},\"kind\":\"unresolved\",\"reasons\":[\"unknown\"]}"
+   },
+   "note": null
+  },
+  {
+   "id": "adversarial-decimal-fact-null",
+   "origin": "Conformance, evaluation rows, adversarial: where decimal is declared, a fact given as null",
+   "optIn": true,
+   "pack": "{\"specVersion\": \"0.2.0-draft\", \"id\": \"https://example.invalid/judgment-packs/rfc0016-row\", \"version\": \"0.1.0\", \"title\": \"Synthetic draft RFC 0016 row\", \"description\": \"Invented content for specification testing; it authorizes nothing.\", \"decision\": {\"intent\": \"Exercise one draft RFC 0016 declaration against one facts document.\", \"question\": \"Is the outcome produced, and with which values?\"}, \"metadata\": {\"requiredExtensions\": [\"org.judgmentpack.outcome-values\"]},  \"outcomes\": [{\"id\": \"approve\", \"label\": \"An outcome\", \"extensions\": {\"org.judgmentpack.outcome-values\": {\"v\": {\"type\": \"decimal\", \"fromFact\": \"/selected\"}}}}, {\"id\": \"decline\", \"label\": \"An outcome\"}], \"rules\": [{\"id\": \"the-rule\", \"description\": \"The one rule.\", \"when\": {\"op\": \"fact\", \"path\": \"/go\", \"operator\": \"equals\", \"value\": true}, \"outcome\": \"approve\", \"onUnknown\": \"ignore\"}]}",
+   "facts": "{\"go\": true, \"selected\": null}",
+   "evidenceAvailability": null,
+   "expected": {
+    "disposition": "{\"handoff\":{\"state\":\"none\"},\"kind\":\"unresolved\",\"reasons\":[\"unknown\"]}"
+   },
+   "note": null
+  },
+  {
+   "id": "adversarial-decimal-fact-object",
+   "origin": "Conformance, evaluation rows, adversarial: where decimal is declared, a fact given as an object",
+   "optIn": true,
+   "pack": "{\"specVersion\": \"0.2.0-draft\", \"id\": \"https://example.invalid/judgment-packs/rfc0016-row\", \"version\": \"0.1.0\", \"title\": \"Synthetic draft RFC 0016 row\", \"description\": \"Invented content for specification testing; it authorizes nothing.\", \"decision\": {\"intent\": \"Exercise one draft RFC 0016 declaration against one facts document.\", \"question\": \"Is the outcome produced, and with which values?\"}, \"metadata\": {\"requiredExtensions\": [\"org.judgmentpack.outcome-values\"]},  \"outcomes\": [{\"id\": \"approve\", \"label\": \"An outcome\", \"extensions\": {\"org.judgmentpack.outcome-values\": {\"v\": {\"type\": \"decimal\", \"fromFact\": \"/selected\"}}}}, {\"id\": \"decline\", \"label\": \"An outcome\"}], \"rules\": [{\"id\": \"the-rule\", \"description\": \"The one rule.\", \"when\": {\"op\": \"fact\", \"path\": \"/go\", \"operator\": \"equals\", \"value\": true}, \"outcome\": \"approve\", \"onUnknown\": \"ignore\"}]}",
+   "facts": "{\"go\": true, \"selected\": {\"amount\": \"1\"}}",
+   "evidenceAvailability": null,
+   "expected": {
+    "disposition": "{\"handoff\":{\"state\":\"none\"},\"kind\":\"unresolved\",\"reasons\":[\"unknown\"]}"
+   },
+   "note": null
+  },
+  {
+   "id": "adversarial-decimal-fact-whitespace",
+   "origin": "Conformance, evaluation rows, adversarial: where decimal is declared, a fact given as a string with surrounding whitespace",
+   "optIn": true,
+   "pack": "{\"specVersion\": \"0.2.0-draft\", \"id\": \"https://example.invalid/judgment-packs/rfc0016-row\", \"version\": \"0.1.0\", \"title\": \"Synthetic draft RFC 0016 row\", \"description\": \"Invented content for specification testing; it authorizes nothing.\", \"decision\": {\"intent\": \"Exercise one draft RFC 0016 declaration against one facts document.\", \"question\": \"Is the outcome produced, and with which values?\"}, \"metadata\": {\"requiredExtensions\": [\"org.judgmentpack.outcome-values\"]},  \"outcomes\": [{\"id\": \"approve\", \"label\": \"An outcome\", \"extensions\": {\"org.judgmentpack.outcome-values\": {\"v\": {\"type\": \"decimal\", \"fromFact\": \"/selected\"}}}}, {\"id\": \"decline\", \"label\": \"An outcome\"}], \"rules\": [{\"id\": \"the-rule\", \"description\": \"The one rule.\", \"when\": {\"op\": \"fact\", \"path\": \"/go\", \"operator\": \"equals\", \"value\": true}, \"outcome\": \"approve\", \"onUnknown\": \"ignore\"}]}",
+   "facts": "{\"go\": true, \"selected\": \" 149.50 \"}",
+   "evidenceAvailability": null,
+   "expected": {
+    "disposition": "{\"handoff\":{\"state\":\"none\"},\"kind\":\"unresolved\",\"reasons\":[\"unknown\"]}"
+   },
+   "note": null
+  },
+  {
+   "id": "adversarial-string-fact-whitespace",
+   "origin": "Conformance, evaluation rows, adversarial: where string is declared, a fact string with surrounding whitespace, which resolves and is copied unchanged",
+   "optIn": true,
+   "pack": "{\"specVersion\": \"0.2.0-draft\", \"id\": \"https://example.invalid/judgment-packs/rfc0016-row\", \"version\": \"0.1.0\", \"title\": \"Synthetic draft RFC 0016 row\", \"description\": \"Invented content for specification testing; it authorizes nothing.\", \"decision\": {\"intent\": \"Exercise one draft RFC 0016 declaration against one facts document.\", \"question\": \"Is the outcome produced, and with which values?\"}, \"metadata\": {\"requiredExtensions\": [\"org.judgmentpack.outcome-values\"]},  \"outcomes\": [{\"id\": \"approve\", \"label\": \"An outcome\", \"extensions\": {\"org.judgmentpack.outcome-values\": {\"v\": {\"type\": \"string\", \"fromFact\": \"/selected\"}}}}, {\"id\": \"decline\", \"label\": \"An outcome\"}], \"rules\": [{\"id\": \"the-rule\", \"description\": \"The one rule.\", \"when\": {\"op\": \"fact\", \"path\": \"/go\", \"operator\": \"equals\", \"value\": true}, \"outcome\": \"approve\", \"onUnknown\": \"ignore\"}]}",
+   "facts": "{\"go\": true, \"selected\": \"  CAD \\t\"}",
+   "evidenceAvailability": null,
+   "expected": {
+    "disposition": "{\"handoff\":{\"state\":\"none\"},\"kind\":\"outcome\",\"outcomeId\":\"approve\",\"reasons\":[],\"value\":{\"v\":\"  CAD \\t\"}}"
+   },
+   "note": null
+  },
+  {
+   "id": "adversarial-string-fact-unpaired-surrogate",
+   "origin": "Conformance, evaluation rows, adversarial: where string is declared, a fact string holding an unpaired surrogate, which does not resolve",
+   "optIn": true,
+   "pack": "{\"specVersion\": \"0.2.0-draft\", \"id\": \"https://example.invalid/judgment-packs/rfc0016-row\", \"version\": \"0.1.0\", \"title\": \"Synthetic draft RFC 0016 row\", \"description\": \"Invented content for specification testing; it authorizes nothing.\", \"decision\": {\"intent\": \"Exercise one draft RFC 0016 declaration against one facts document.\", \"question\": \"Is the outcome produced, and with which values?\"}, \"metadata\": {\"requiredExtensions\": [\"org.judgmentpack.outcome-values\"]},  \"outcomes\": [{\"id\": \"approve\", \"label\": \"An outcome\", \"extensions\": {\"org.judgmentpack.outcome-values\": {\"v\": {\"type\": \"string\", \"fromFact\": \"/selected\"}}}}, {\"id\": \"decline\", \"label\": \"An outcome\"}], \"rules\": [{\"id\": \"the-rule\", \"description\": \"The one rule.\", \"when\": {\"op\": \"fact\", \"path\": \"/go\", \"operator\": \"equals\", \"value\": true}, \"outcome\": \"approve\", \"onUnknown\": \"ignore\"}]}",
+   "facts": "{\"go\": true, \"selected\": \"\\udc00\"}",
+   "evidenceAvailability": null,
+   "expected": {
+    "disposition": "{\"handoff\":{\"state\":\"none\"},\"kind\":\"unresolved\",\"reasons\":[\"unknown\"]}"
+   },
+   "note": "An implementation whose carrier refuses the facts document answers malformed-input and never reaches resolution."
+  },
+  {
+   "id": "adversarial-array-out-of-range",
+   "origin": "Conformance, evaluation rows, adversarial: a pointer that traverses an array out of range",
+   "optIn": true,
+   "pack": "{\"specVersion\": \"0.2.0-draft\", \"id\": \"https://example.invalid/judgment-packs/rfc0016-row\", \"version\": \"0.1.0\", \"title\": \"Synthetic draft RFC 0016 row\", \"description\": \"Invented content for specification testing; it authorizes nothing.\", \"decision\": {\"intent\": \"Exercise one draft RFC 0016 declaration against one facts document.\", \"question\": \"Is the outcome produced, and with which values?\"}, \"metadata\": {\"requiredExtensions\": [\"org.judgmentpack.outcome-values\"]},  \"outcomes\": [{\"id\": \"approve\", \"label\": \"An outcome\", \"extensions\": {\"org.judgmentpack.outcome-values\": {\"v\": {\"type\": \"decimal\", \"fromFact\": \"/lines/2/amount\"}}}}, {\"id\": \"decline\", \"label\": \"An outcome\"}], \"rules\": [{\"id\": \"the-rule\", \"description\": \"The one rule.\", \"when\": {\"op\": \"fact\", \"path\": \"/go\", \"operator\": \"equals\", \"value\": true}, \"outcome\": \"approve\", \"onUnknown\": \"ignore\"}]}",
+   "facts": "{\"go\": true, \"lines\": [{\"amount\": \"1\"}, {\"amount\": \"2\"}]}",
+   "evidenceAvailability": null,
+   "expected": {
+    "disposition": "{\"handoff\":{\"state\":\"none\"},\"kind\":\"unresolved\",\"reasons\":[\"unknown\"]}"
+   },
+   "note": null
+  },
+  {
+   "id": "adversarial-another-outcome-unresolvable",
+   "origin": "Conformance, evaluation rows, adversarial: a produced outcome whose own values resolve while another outcome declares a fromFact the facts cannot supply",
+   "optIn": true,
+   "pack": "{\"specVersion\": \"0.2.0-draft\", \"id\": \"https://example.invalid/judgment-packs/rfc0016-row\", \"version\": \"0.1.0\", \"title\": \"Synthetic draft RFC 0016 row\", \"description\": \"Invented content for specification testing; it authorizes nothing.\", \"decision\": {\"intent\": \"Exercise one draft RFC 0016 declaration against one facts document.\", \"question\": \"Is the outcome produced, and with which values?\"}, \"metadata\": {\"requiredExtensions\": [\"org.judgmentpack.outcome-values\"]},  \"outcomes\": [{\"id\": \"approve\", \"label\": \"An outcome\", \"extensions\": {\"org.judgmentpack.outcome-values\": {\"refundAmount\": {\"type\": \"decimal\", \"fromFact\": \"/proposed/refundAmount\"}, \"currency\": {\"type\": \"string\", \"constant\": \"CAD\"}}}}, {\"id\": \"decline\", \"label\": \"An outcome\", \"extensions\": {\"org.judgmentpack.outcome-values\": {\"reason\": {\"type\": \"string\", \"fromFact\": \"/missing\"}}}}], \"rules\": [{\"id\": \"the-rule\", \"description\": \"The one rule.\", \"when\": {\"op\": \"fact\", \"path\": \"/go\", \"operator\": \"equals\", \"value\": true}, \"outcome\": \"approve\", \"onUnknown\": \"ignore\"}]}",
+   "facts": "{\"go\": true, \"proposed\": {\"refundAmount\": \"149.50\"}}",
+   "evidenceAvailability": null,
+   "expected": {
+    "disposition": "{\"handoff\":{\"state\":\"none\"},\"kind\":\"outcome\",\"outcomeId\":\"approve\",\"reasons\":[],\"value\":{\"currency\":\"CAD\",\"refundAmount\":\"149.50\"}}"
+   },
+   "note": null
+  },
+  {
+   "id": "example-pass-through",
+   "origin": "Examples, pass-through: the facts supply the amount",
+   "optIn": true,
+   "pack": "{\"specVersion\": \"0.2.0-draft\", \"id\": \"https://example.invalid/judgment-packs/rfc0016-row\", \"version\": \"0.1.0\", \"title\": \"Synthetic draft RFC 0016 row\", \"description\": \"Invented content for specification testing; it authorizes nothing.\", \"decision\": {\"intent\": \"Exercise one draft RFC 0016 declaration against one facts document.\", \"question\": \"Is the outcome produced, and with which values?\"}, \"metadata\": {\"requiredExtensions\": [\"org.judgmentpack.outcome-values\"]},  \"outcomes\": [{\"id\": \"approve-refund\", \"label\": \"An outcome\", \"extensions\": {\"org.judgmentpack.outcome-values\": {\"refundAmount\": {\"type\": \"decimal\", \"fromFact\": \"/proposed/refundAmount\"}, \"currency\": {\"type\": \"string\", \"constant\": \"CAD\"}}}}, {\"id\": \"decline\", \"label\": \"An outcome\"}], \"rules\": [{\"id\": \"good-standing\", \"description\": \"A customer in good standing is refunded.\", \"when\": {\"op\": \"fact\", \"path\": \"/customer/goodStanding\", \"operator\": \"equals\", \"value\": true}, \"outcome\": \"approve-refund\", \"onUnknown\": \"ignore\"}]}",
+   "facts": "{\"customer\": {\"goodStanding\": true}, \"proposed\": {\"refundAmount\": \"149.50\"}}",
+   "evidenceAvailability": null,
+   "expected": {
+    "disposition": "{\"handoff\":{\"state\":\"none\"},\"kind\":\"outcome\",\"outcomeId\":\"approve-refund\",\"reasons\":[],\"value\":{\"currency\":\"CAD\",\"refundAmount\":\"149.50\"}}"
+   },
+   "note": "The expected bytes are the ones the RFC prints under The disposition."
+  },
+  {
+   "id": "example-pass-through-amount-absent",
+   "origin": "Examples, pass-through: /proposed/refundAmount absent",
+   "optIn": true,
+   "pack": "{\"specVersion\": \"0.2.0-draft\", \"id\": \"https://example.invalid/judgment-packs/rfc0016-row\", \"version\": \"0.1.0\", \"title\": \"Synthetic draft RFC 0016 row\", \"description\": \"Invented content for specification testing; it authorizes nothing.\", \"decision\": {\"intent\": \"Exercise one draft RFC 0016 declaration against one facts document.\", \"question\": \"Is the outcome produced, and with which values?\"}, \"metadata\": {\"requiredExtensions\": [\"org.judgmentpack.outcome-values\"]},  \"outcomes\": [{\"id\": \"approve-refund\", \"label\": \"An outcome\", \"extensions\": {\"org.judgmentpack.outcome-values\": {\"refundAmount\": {\"type\": \"decimal\", \"fromFact\": \"/proposed/refundAmount\"}, \"currency\": {\"type\": \"string\", \"constant\": \"CAD\"}}}}, {\"id\": \"decline\", \"label\": \"An outcome\"}], \"rules\": [{\"id\": \"good-standing\", \"description\": \"A customer in good standing is refunded.\", \"when\": {\"op\": \"fact\", \"path\": \"/customer/goodStanding\", \"operator\": \"equals\", \"value\": true}, \"outcome\": \"approve-refund\", \"onUnknown\": \"ignore\"}]}",
+   "facts": "{\"customer\": {\"goodStanding\": true}}",
+   "evidenceAvailability": null,
+   "expected": {
+    "disposition": "{\"handoff\":{\"state\":\"none\"},\"kind\":\"unresolved\",\"reasons\":[\"unknown\"]}"
+   },
+   "note": null
+  },
+  {
+   "id": "example-pass-through-amount-a-number",
+   "origin": "Examples, pass-through: /proposed/refundAmount given as the JSON number 149.5",
+   "optIn": true,
+   "pack": "{\"specVersion\": \"0.2.0-draft\", \"id\": \"https://example.invalid/judgment-packs/rfc0016-row\", \"version\": \"0.1.0\", \"title\": \"Synthetic draft RFC 0016 row\", \"description\": \"Invented content for specification testing; it authorizes nothing.\", \"decision\": {\"intent\": \"Exercise one draft RFC 0016 declaration against one facts document.\", \"question\": \"Is the outcome produced, and with which values?\"}, \"metadata\": {\"requiredExtensions\": [\"org.judgmentpack.outcome-values\"]},  \"outcomes\": [{\"id\": \"approve-refund\", \"label\": \"An outcome\", \"extensions\": {\"org.judgmentpack.outcome-values\": {\"refundAmount\": {\"type\": \"decimal\", \"fromFact\": \"/proposed/refundAmount\"}, \"currency\": {\"type\": \"string\", \"constant\": \"CAD\"}}}}, {\"id\": \"decline\", \"label\": \"An outcome\"}], \"rules\": [{\"id\": \"good-standing\", \"description\": \"A customer in good standing is refunded.\", \"when\": {\"op\": \"fact\", \"path\": \"/customer/goodStanding\", \"operator\": \"equals\", \"value\": true}, \"outcome\": \"approve-refund\", \"onUnknown\": \"ignore\"}]}",
+   "facts": "{\"customer\": {\"goodStanding\": true}, \"proposed\": {\"refundAmount\": 149.5}}",
+   "evidenceAvailability": null,
+   "expected": {
+    "disposition": "{\"handoff\":{\"state\":\"none\"},\"kind\":\"unresolved\",\"reasons\":[\"unknown\"]}"
+   },
+   "note": null
+  },
+  {
+   "id": "example-tiers-standard",
+   "origin": "Examples, tiers: the rules produce limit-standard",
+   "optIn": true,
+   "pack": "{\"specVersion\": \"0.2.0-draft\", \"id\": \"https://example.invalid/judgment-packs/rfc0016-row\", \"version\": \"0.1.0\", \"title\": \"Synthetic draft RFC 0016 row\", \"description\": \"Invented content for specification testing; it authorizes nothing.\", \"decision\": {\"intent\": \"Exercise one draft RFC 0016 declaration against one facts document.\", \"question\": \"Is the outcome produced, and with which values?\"}, \"metadata\": {\"requiredExtensions\": [\"org.judgmentpack.outcome-values\"]}, \"fallbackOutcome\": \"decline\", \"outcomes\": [{\"id\": \"limit-high\", \"label\": \"An outcome\", \"extensions\": {\"org.judgmentpack.outcome-values\": {\"creditLimit\": {\"type\": \"decimal\", \"constant\": \"10000\"}}}}, {\"id\": \"limit-standard\", \"label\": \"An outcome\", \"extensions\": {\"org.judgmentpack.outcome-values\": {\"creditLimit\": {\"type\": \"decimal\", \"constant\": \"5000\"}}}}, {\"id\": \"decline\", \"label\": \"An outcome\"}], \"rules\": [{\"id\": \"high\", \"description\": \"A score of 720 or more.\", \"when\": {\"op\": \"fact\", \"path\": \"/score\", \"operator\": \"greater-than-or-equal\", \"value\": \"720\"}, \"outcome\": \"limit-high\", \"onUnknown\": \"escalate\"}, {\"id\": \"standard\", \"description\": \"A score of 650 to 719.\", \"when\": {\"op\": \"all\", \"conditions\": [{\"op\": \"fact\", \"path\": \"/score\", \"operator\": \"greater-than-or-equal\", \"value\": \"650\"}, {\"op\": \"fact\", \"path\": \"/score\", \"operator\": \"less-than\", \"value\": \"720\"}]}, \"outcome\": \"limit-standard\", \"onUnknown\": \"escalate\"}]}",
+   "facts": "{\"score\": \"700\"}",
+   "evidenceAvailability": null,
+   "expected": {
+    "disposition": "{\"handoff\":{\"state\":\"none\"},\"kind\":\"outcome\",\"outcomeId\":\"limit-standard\",\"reasons\":[],\"value\":{\"creditLimit\":\"5000\"}}"
+   },
+   "note": null
+  },
+  {
+   "id": "example-tiers-decline",
+   "origin": "Examples, tiers: the rules produce decline, which carries no value member",
+   "optIn": true,
+   "pack": "{\"specVersion\": \"0.2.0-draft\", \"id\": \"https://example.invalid/judgment-packs/rfc0016-row\", \"version\": \"0.1.0\", \"title\": \"Synthetic draft RFC 0016 row\", \"description\": \"Invented content for specification testing; it authorizes nothing.\", \"decision\": {\"intent\": \"Exercise one draft RFC 0016 declaration against one facts document.\", \"question\": \"Is the outcome produced, and with which values?\"}, \"metadata\": {\"requiredExtensions\": [\"org.judgmentpack.outcome-values\"]}, \"fallbackOutcome\": \"decline\", \"outcomes\": [{\"id\": \"limit-high\", \"label\": \"An outcome\", \"extensions\": {\"org.judgmentpack.outcome-values\": {\"creditLimit\": {\"type\": \"decimal\", \"constant\": \"10000\"}}}}, {\"id\": \"limit-standard\", \"label\": \"An outcome\", \"extensions\": {\"org.judgmentpack.outcome-values\": {\"creditLimit\": {\"type\": \"decimal\", \"constant\": \"5000\"}}}}, {\"id\": \"decline\", \"label\": \"An outcome\"}], \"rules\": [{\"id\": \"high\", \"description\": \"A score of 720 or more.\", \"when\": {\"op\": \"fact\", \"path\": \"/score\", \"operator\": \"greater-than-or-equal\", \"value\": \"720\"}, \"outcome\": \"limit-high\", \"onUnknown\": \"escalate\"}, {\"id\": \"standard\", \"description\": \"A score of 650 to 719.\", \"when\": {\"op\": \"all\", \"conditions\": [{\"op\": \"fact\", \"path\": \"/score\", \"operator\": \"greater-than-or-equal\", \"value\": \"650\"}, {\"op\": \"fact\", \"path\": \"/score\", \"operator\": \"less-than\", \"value\": \"720\"}]}, \"outcome\": \"limit-standard\", \"onUnknown\": \"escalate\"}]}",
+   "facts": "{\"score\": \"600\"}",
+   "evidenceAvailability": null,
+   "expected": {
+    "disposition": "{\"handoff\":{\"state\":\"none\"},\"kind\":\"outcome\",\"outcomeId\":\"decline\",\"reasons\":[]}"
+   },
+   "note": null
+  },
+  {
+   "id": "error-malformed-declaration-applicability-false",
+   "origin": "Conformance, error rows: a malformed declaration on an outcome the evaluation would not have produced, in a pack whose applicability is false",
+   "optIn": true,
+   "pack": "{\"specVersion\": \"0.2.0-draft\", \"id\": \"https://example.invalid/judgment-packs/rfc0016-row\", \"version\": \"0.1.0\", \"title\": \"Synthetic draft RFC 0016 row\", \"description\": \"Invented content for specification testing; it authorizes nothing.\", \"decision\": {\"intent\": \"Exercise one draft RFC 0016 declaration against one facts document.\", \"question\": \"Is the outcome produced, and with which values?\"}, \"metadata\": {\"requiredExtensions\": [\"org.judgmentpack.outcome-values\"]}, \"applicability\": {\"op\": \"literal\", \"value\": false}, \"outcomes\": [{\"id\": \"approve\", \"label\": \"An outcome\"}, {\"id\": \"decline\", \"label\": \"An outcome\", \"extensions\": {\"org.judgmentpack.outcome-values\": {\"v\": {\"type\": \"decimal\", \"constant\": \"1e3\"}}}}], \"rules\": [{\"id\": \"the-rule\", \"description\": \"The one rule.\", \"when\": {\"op\": \"fact\", \"path\": \"/go\", \"operator\": \"equals\", \"value\": true}, \"outcome\": \"approve\", \"onUnknown\": \"ignore\"}]}",
+   "facts": "{\"go\": true}",
+   "evidenceAvailability": null,
+   "expected": {
+    "errorClass": "pack-not-conformant"
+   },
+   "note": null
+  },
+  {
+   "id": "error-malformed-declaration-and-undeclared-evidence",
+   "origin": "Conformance, error rows: a malformed declaration together with an evidence-availability document carrying an undeclared member name",
+   "optIn": true,
+   "pack": "{\"specVersion\": \"0.2.0-draft\", \"id\": \"https://example.invalid/judgment-packs/rfc0016-row\", \"version\": \"0.1.0\", \"title\": \"Synthetic draft RFC 0016 row\", \"description\": \"Invented content for specification testing; it authorizes nothing.\", \"decision\": {\"intent\": \"Exercise one draft RFC 0016 declaration against one facts document.\", \"question\": \"Is the outcome produced, and with which values?\"}, \"metadata\": {\"requiredExtensions\": [\"org.judgmentpack.outcome-values\"]},  \"outcomes\": [{\"id\": \"approve\", \"label\": \"An outcome\"}, {\"id\": \"decline\", \"label\": \"An outcome\", \"extensions\": {\"org.judgmentpack.outcome-values\": {\"v\": {\"type\": \"decimal\", \"constant\": \"1e3\"}}}}], \"rules\": [{\"id\": \"the-rule\", \"description\": \"The one rule.\", \"when\": {\"op\": \"fact\", \"path\": \"/go\", \"operator\": \"equals\", \"value\": true}, \"outcome\": \"approve\", \"onUnknown\": \"ignore\"}]}",
+   "facts": "{\"go\": true}",
+   "evidenceAvailability": "{\"undeclared\": \"present\"}",
+   "expected": {
+    "errorClass": "pack-not-conformant"
+   },
+   "note": null
+  },
+  {
+   "id": "error-unsupported-well-formed",
+   "origin": "Conformance, error rows: for an implementation that does not support the extension, a well-formed pack that requires it",
+   "optIn": false,
+   "pack": "{\"specVersion\": \"0.2.0-draft\", \"id\": \"https://example.invalid/judgment-packs/rfc0016-row\", \"version\": \"0.1.0\", \"title\": \"Synthetic draft RFC 0016 row\", \"description\": \"Invented content for specification testing; it authorizes nothing.\", \"decision\": {\"intent\": \"Exercise one draft RFC 0016 declaration against one facts document.\", \"question\": \"Is the outcome produced, and with which values?\"}, \"metadata\": {\"requiredExtensions\": [\"org.judgmentpack.outcome-values\"]},  \"outcomes\": [{\"id\": \"approve\", \"label\": \"An outcome\", \"extensions\": {\"org.judgmentpack.outcome-values\": {\"refundAmount\": {\"type\": \"decimal\", \"fromFact\": \"/proposed/refundAmount\"}, \"currency\": {\"type\": \"string\", \"constant\": \"CAD\"}}}}, {\"id\": \"decline\", \"label\": \"An outcome\"}], \"rules\": [{\"id\": \"the-rule\", \"description\": \"The one rule.\", \"when\": {\"op\": \"fact\", \"path\": \"/go\", \"operator\": \"equals\", \"value\": true}, \"outcome\": \"approve\", \"onUnknown\": \"ignore\"}]}",
+   "facts": "{\"go\": true, \"proposed\": {\"refundAmount\": \"149.50\"}}",
+   "evidenceAvailability": null,
+   "expected": {
+    "errorClass": "unsupported-required-extension"
+   },
+   "note": "The row needs a schema that admits the name. Under the schema of 0.2.0-draft the pack is not structurally conforming, as the RFC's Compatibility section says."
+  },
+  {
+   "id": "error-unsupported-empty-declaration",
+   "origin": "Conformance, error rows: for an implementation that does not support the extension, the same class where its declaration is empty",
+   "optIn": false,
+   "pack": "{\"specVersion\": \"0.2.0-draft\", \"id\": \"https://example.invalid/judgment-packs/rfc0016-row\", \"version\": \"0.1.0\", \"title\": \"Synthetic draft RFC 0016 row\", \"description\": \"Invented content for specification testing; it authorizes nothing.\", \"decision\": {\"intent\": \"Exercise one draft RFC 0016 declaration against one facts document.\", \"question\": \"Is the outcome produced, and with which values?\"}, \"metadata\": {\"requiredExtensions\": [\"org.judgmentpack.outcome-values\"]},  \"outcomes\": [{\"id\": \"approve\", \"label\": \"An outcome\", \"extensions\": {\"org.judgmentpack.outcome-values\": {}}}, {\"id\": \"decline\", \"label\": \"An outcome\"}], \"rules\": [{\"id\": \"the-rule\", \"description\": \"The one rule.\", \"when\": {\"op\": \"fact\", \"path\": \"/go\", \"operator\": \"equals\", \"value\": true}, \"outcome\": \"approve\", \"onUnknown\": \"ignore\"}]}",
+   "facts": "{\"go\": true}",
+   "evidenceAvailability": null,
+   "expected": {
+    "errorClass": "unsupported-required-extension"
+   },
+   "note": "As error-unsupported-well-formed."
+  },
+  {
+   "id": "error-unsupported-unknown-type",
+   "origin": "Conformance, error rows: for an implementation that does not support the extension, the same class where its declaration has an unknown type",
+   "optIn": false,
+   "pack": "{\"specVersion\": \"0.2.0-draft\", \"id\": \"https://example.invalid/judgment-packs/rfc0016-row\", \"version\": \"0.1.0\", \"title\": \"Synthetic draft RFC 0016 row\", \"description\": \"Invented content for specification testing; it authorizes nothing.\", \"decision\": {\"intent\": \"Exercise one draft RFC 0016 declaration against one facts document.\", \"question\": \"Is the outcome produced, and with which values?\"}, \"metadata\": {\"requiredExtensions\": [\"org.judgmentpack.outcome-values\"]},  \"outcomes\": [{\"id\": \"approve\", \"label\": \"An outcome\", \"extensions\": {\"org.judgmentpack.outcome-values\": {\"v\": {\"type\": \"number\", \"constant\": \"1\"}}}}, {\"id\": \"decline\", \"label\": \"An outcome\"}], \"rules\": [{\"id\": \"the-rule\", \"description\": \"The one rule.\", \"when\": {\"op\": \"fact\", \"path\": \"/go\", \"operator\": \"equals\", \"value\": true}, \"outcome\": \"approve\", \"onUnknown\": \"ignore\"}]}",
+   "facts": "{\"go\": true}",
+   "evidenceAvailability": null,
+   "expected": {
+    "errorClass": "unsupported-required-extension"
+   },
+   "note": "As error-unsupported-well-formed."
+  },
+  {
+   "id": "error-duplicate-member-unsupported",
+   "origin": "Conformance, error rows: a duplicate member name inside the declaration, for an implementation that does not support the extension",
+   "optIn": false,
+   "pack": "{\"specVersion\": \"0.2.0-draft\", \"id\": \"https://example.invalid/judgment-packs/rfc0016-row\", \"version\": \"0.1.0\", \"title\": \"Synthetic draft RFC 0016 row\", \"description\": \"Invented content for specification testing; it authorizes nothing.\", \"decision\": {\"intent\": \"Exercise one draft RFC 0016 declaration against one facts document.\", \"question\": \"Is the outcome produced, and with which values?\"}, \"metadata\": {\"requiredExtensions\": [\"org.judgmentpack.outcome-values\"]},  \"outcomes\": [{\"id\": \"approve\", \"label\": \"An outcome\", \"extensions\": {\"org.judgmentpack.outcome-values\": {\"v\": {\"type\": \"string\", \"constant\": \"a\"}, \"v\": {\"type\": \"string\", \"constant\": \"b\"}}}}, {\"id\": \"decline\", \"label\": \"An outcome\"}], \"rules\": [{\"id\": \"the-rule\", \"description\": \"The one rule.\", \"when\": {\"op\": \"fact\", \"path\": \"/go\", \"operator\": \"equals\", \"value\": true}, \"outcome\": \"approve\", \"onUnknown\": \"ignore\"}]}",
+   "facts": "{\"go\": true}",
+   "evidenceAvailability": null,
+   "expected": {
+    "errorClass": "pack-not-conformant"
+   },
+   "note": null
+  },
+  {
+   "id": "error-duplicate-member-supported",
+   "origin": "Conformance, error rows: a duplicate member name inside the declaration, for an implementation that supports it",
+   "optIn": true,
+   "pack": "{\"specVersion\": \"0.2.0-draft\", \"id\": \"https://example.invalid/judgment-packs/rfc0016-row\", \"version\": \"0.1.0\", \"title\": \"Synthetic draft RFC 0016 row\", \"description\": \"Invented content for specification testing; it authorizes nothing.\", \"decision\": {\"intent\": \"Exercise one draft RFC 0016 declaration against one facts document.\", \"question\": \"Is the outcome produced, and with which values?\"}, \"metadata\": {\"requiredExtensions\": [\"org.judgmentpack.outcome-values\"]},  \"outcomes\": [{\"id\": \"approve\", \"label\": \"An outcome\", \"extensions\": {\"org.judgmentpack.outcome-values\": {\"v\": {\"type\": \"string\", \"constant\": \"a\"}, \"v\": {\"type\": \"string\", \"constant\": \"b\"}}}}, {\"id\": \"decline\", \"label\": \"An outcome\"}], \"rules\": [{\"id\": \"the-rule\", \"description\": \"The one rule.\", \"when\": {\"op\": \"fact\", \"path\": \"/go\", \"operator\": \"equals\", \"value\": true}, \"outcome\": \"approve\", \"onUnknown\": \"ignore\"}]}",
+   "facts": "{\"go\": true}",
+   "evidenceAvailability": null,
+   "expected": {
+    "errorClass": "pack-not-conformant"
+   },
+   "note": null
+  }
+ ]
+}

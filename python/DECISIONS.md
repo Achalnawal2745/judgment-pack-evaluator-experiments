@@ -1,6 +1,6 @@
 # Interpretation decisions
 
-This log records choices made from the three clean-room reference texts. Quotations below are the
+This log records choices made from the supplied clean-room reference texts. Quotations below are the
 exact text relied on. The implementation was not compared with another evaluator.
 
 1. **An omitted evidence-availability input is an empty object, so every declared requirement is
@@ -357,6 +357,148 @@ exact text relied on. The implementation was not compared with another evaluator
     the thirteen rows using `data-request-intake-triage.json`. The other three declared fixture
     basenames are absent, so their seven rows remain explicitly blocked rather than being made to
     agree with reconstructed inputs.
+
+27. **RFC 0016 opt-in admits one reserved name and supplies its capability.**
+
+    Text relied on: the current brief requires “An opt-in, off by default” and leaves admission
+    “yours to decide and to record.” RFC 0016, *What this needs from Core*, says both schema
+    restrictions “would admit this one name” while “refusing every other reserved name.” Its
+    *Declaration* requires the name in `metadata.requiredExtensions`.
+
+    I chose `enable_rfc0016=True` and CLI `--enable-rfc0016`, independently of RFC 0008, following
+    the existing opt-in spelling. The flag admits exactly `org.judgmentpack.outcome-values` on
+    outcomes and in `metadata.requiredExtensions`, validates every declaration during pack
+    preflight, and adds that one capability to the implementation's supported set. Supplying the
+    name in `supported_extensions` alone cannot enable it. All other Core checks remain in force:
+    bounded/unique-member JSON, closed object shapes, identifiers, formats, references, at least
+    two outcomes, declaration of required capabilities, and values for every required extension.
+    The reference schema is untouched. Other required capabilities still need explicit support.
+
+    Alternatives were stripping extension content before validation, relaxing the entire reserved
+    namespace, or requiring both the flag and a supported-extension argument. The first two weaken
+    admission; the third permits an internally implemented capability to be accidentally omitted.
+    The existing evaluator accepts `0.1.0-draft` and `0.2.0-draft`; I apply the local prototype to
+    both rather than invent a version or silently narrow the historical API. The reference schema
+    remains unchanged and no conformance claim is made. With the flag off, admission is unchanged.
+
+28. **Unsupported-consumer RFC rows retain the current reserved-name pack error.**
+
+    Text relied on: the brief requires that with opt-in off the package behave “as it does now,
+    for every input.” RFC 0016, *Compatibility*, says “Under the current schema a pack using the
+    reserved name is not structurally conforming” and conditions the unsupported-extension error
+    on “Once the schema admits the name”. Its *Conformance*, third error bullet, asks an
+    unsupported implementation to report `unsupported-required-extension` for a well-formed
+    declaration, an empty declaration, and an unknown type.
+
+    Those three cases cannot get that expected class with this prototype's flag off: current
+    admission rejects the reserved name as `pack-not-conformant` before capability checks. With
+    the flag on the implementation supports it and validates its declarations. I preserve the
+    off-mode contract and explicitly test `pack-not-conformant` for all three variants in
+    `test_error_unsupported_consumer_reserved_name_precedence_decision_28`. They are reported
+    limitations, not silently omitted or claimed to match the RFC's expected error. The duplicate
+    member variant of the same bullet does match: CLI JSON loading rejects it as
+    `pack-not-conformant` with either flag setting, before malformed evidence is inspected.
+
+    Alternatives were changing off-mode admission or introducing an additional schema-only mode
+    to simulate an unsupported implementation. The former contradicts the brief and the latter
+    adds a public mode with no requested use. I do not disagree with the RFC's expected class for
+    a future reader whose schema already admits the name; that is not the current off-mode
+    reader. No other listed RFC case is unmet or has a disputed expected answer.
+
+29. **Extension placement means Core extension slots, not arbitrary JSON data.**
+
+    Text relied on: RFC 0016, *Declaration*, says “As a member name of an `extensions` object,
+    the name appears on an outcome and nowhere else” and refers to the places “The schema admits”.
+    Core §4 distinguishes recognized Core members from “arbitrary JSON values inside an
+    `extensions` object”; §9 says an optional extension “MUST NOT change Core semantics”.
+
+    I check all schema-defined slots: root, decision, evidence requirement, source, rule,
+    exception, escalation, metadata, and outcome. Only outcome admits this name. Objects in
+    condition operands and inside another extension's payload are data, even if they contain
+    members spelled `extensions` and `org.judgmentpack.outcome-values`. They neither declare
+    values nor satisfy a required-extension entry. A recursive search for those spellings anywhere
+    in the pack was the alternative; it would interpret literal data as Core structure and make
+    otherwise inert payloads change admission. The new test file pins this scope explicitly.
+
+30. **Unicode checks operate on decoded scalar values without repairing Python strings.**
+
+    Text relied on: RFC 0016, *Declaration*, requires a string to be “a sequence of Unicode
+    scalar values”; its positive document cases include a character outside the BMP “written
+    as a surrogate pair”. *Resolution* says “Nothing is coerced, trimmed or normalized”.
+
+    JSON text containing an escaped high/low surrogate pair is decoded by the existing loader
+    into one scalar and accepted. A Python API string containing surrogate code points is
+    rejected as a constant, or fails resolution as a selected fact, even if it contains two
+    adjacent code points that could be repaired into a pair. The alternative was to join those
+    Python code points or replace lone surrogates; that changes the caller's value. Existing
+    general JSON admission remains unchanged: unselected strings with lone surrogates do not
+    become input errors merely because this prototype is enabled. Only declared `string`
+    constants and selected `string` values receive the scalar check. The pointer syntax remains
+    Core's; a pointer is not itself an outcome string value. Value names use whole-string ASCII
+    matching, including capitals after the first letter; decimals reuse Core's whole-string
+    grammar. Empty strings, control characters, and non-normalized Unicode scalar sequences
+    remain valid and are copied exactly. The canonicalizer gains Boolean serialization while
+    continuing to reject numbers and nulls; its existing scalar checks and UTF-16 member ordering
+    apply to the new member too.
+
+31. **Outcome values share the existing collection and evaluation-work limits.**
+
+    Text relied on: RFC 0016, *Resources*, says “A declaration or a selected value past a
+    documented limit is handled as §10 handles any other.” Its open question 8 leaves bounds
+    undefined. Core §10 requires documented collection-size and evaluation-work limits and
+    distinguishes preflight admission limits from evaluation `resource-exhaustion`.
+
+    I extend decision 25's shared 10,000-item count by the number of value sources declared
+    across all outcomes. As before, this count is checked after input preflight and before
+    applicability; exceeding it is an evaluation-phase `resource-exhaustion`. Only the produced
+    outcome incurs resolution work. Each declared value costs `1 + len(value-name)` units; a
+    `fromFact` additionally costs the pointer attempt defined in decision 22 (including a failing
+    token); each resolved selection or constant costs one type inspection, plus its character
+    count if it is a string. Rejected numbers, nulls, arrays, and objects cost one inspection and
+    their contents are not traversed. All lengths count decoded Python string characters.
+
+    The entire selected declaration is measured and charged once against the same budget as the
+    conditions, before any type failure can return `unknown`. This makes declaration order
+    irrelevant even when one source is missing. No value-resolution work is charged for a
+    non-outcome or an outcome without a declaration. Alternatives were no additional accounting,
+    a separate budget, or short-circuit charging; these respectively leave the new work unbounded,
+    conceal its combined cost, or make authoring order affect exhaustion. Existing JSON string,
+    item, depth, number-token, and document-byte limits still apply at admission, with existing
+    preflight error classes. No new dependency or output truncation is introduced.
+
+32. **Examples use minimal Core packs completed from the RFC's stated behavior.**
+
+    Text relied on: RFC 0016's *Examples* give an outcomes fragment for tiers, describe a pack
+    “whose one rule produces `approve-refund`” for pass-through, and say the calculated quantity
+    “is supplied as the fact `/refund/amount`”. Core §4 requires at least two outcomes and one
+    rule. The RFC supplies no complete pack for these examples.
+
+    I complete the fragments with the existing local base fixture's metadata and required Core
+    fields. The pass-through example has the exact stated condition and declaration, no
+    escalation, and additional unused outcomes to meet Core's minimum. For tiers, the problem
+    statement supplies thresholds 720 and 650: decimal-string score facts select high at >=720,
+    standard at >=650 and <720, and decline by fallback. The alternative of only testing a
+    literal rule would not exercise those described tiers.
+
+    For the calculated example, a <=500 rule approves the already supplied amount, and a >500
+    exception requests escalation to a human-role Supervisor. The alternative of an outcome
+    named `supervisor` would label a category without making the described handoff request.
+    Calculation, origin verification, tool execution, and external action are absent. Values
+    themselves impose no range bound: the tests also copy unbounded positive and negative
+    decimal strings when no rule limits them. These are reconstructed examples, not copies of
+    any unavailable pack or other implementation.
+
+33. **CLI byte comparison applies to the disposition inside the existing envelope.**
+
+    Text relied on: the brief says the command line “prints the disposition as it does now” and
+    “Keep the markers the package already writes.” RFC 0016 extends §8.3's byte-identity
+    requirement to `value` and supplies canonical bytes for the pass-through disposition.
+
+    I retain decision 24's outer `experimental: true` / `conformanceClaim: "none"` envelope
+    and its final newline. The embedded disposition bytes exactly match the RFC sample. A raw
+    sample as the entire stdout was the alternative, but would remove the required markers and
+    change the existing CLI transport. The new CLI test compares the entire stdout byte string,
+    built around the RFC's literal sample, so both requirements are exercised together.
 
 ## Appendix comparison
 

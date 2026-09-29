@@ -1,4 +1,4 @@
-"""Judgment Pack Core evaluator with opt-in experimental RFC 0008 aggregates."""
+"""Core evaluator with opt-in draft RFC 0008 aggregates and RFC 0016 values."""
 
 from .canonical import canonicalize_disposition
 from .conditions import (

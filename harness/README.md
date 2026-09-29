@@ -16,6 +16,15 @@ to the draft grammar. It also runs the equivalence check RFC 0008's
 Conformance section asks for, over the assets in `rfc0008_equivalence/`.
 Findings: `RFC0008-AGREEMENT.md`.
 
+`rfc0016_harness.py` does the same for draft RFC 0016's outcome values. Its rows are the cases
+that RFC lists under Conformance and Examples, written by `make_rfc0016_cases.py` from the RFC's
+text, each with the answer the text gives. It compares three things for each row: the Go answer,
+the Python answer and the RFC's. A disposition is compared byte for byte as each implementation
+wrote it, and an error by its §8.4 class. Rows known not to match the RFC's answer are named in
+the cases file with their reason, and the run fails if a row gets a verdict the file does not name
+for it. Its verdicts and the rows' expected answers are tested in `test_rfc0016_harness.py`, which
+needs neither evaluator. Findings: `RFC0016-AGREEMENT.md`.
+
 Result on 2026-07-27 against judgment-pack v0.2.0 and the
 data-request-intake-triage example: 13/13 agreement (the nine RFC 0006
 appendix instances plus three probes). One shape divergence recorded, not

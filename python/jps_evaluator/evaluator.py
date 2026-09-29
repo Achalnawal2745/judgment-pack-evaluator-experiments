@@ -1,4 +1,4 @@
-"""Core 0.2.0-draft evaluation with an explicitly opt-in RFC 0008 prototype."""
+"""Core 0.2.0-draft evaluation with opt-in RFC 0008 and RFC 0016 prototypes."""
 
 from __future__ import annotations
 
@@ -24,6 +24,11 @@ from .errors import (
     UnsupportedExtensionError,
 )
 from .json_input import normalize_json
+from .outcome_values import (
+    OUTCOME_VALUES_EXTENSION,
+    resolve_values,
+    validate_value_declaration,
+)
 
 
 _LOCAL_ID_RE = re.compile(r"^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$")
@@ -93,6 +98,7 @@ class _PackView:
     requirements: tuple[dict[str, Any], ...]
     requirement_ids: frozenset[str]
     outcomes: frozenset[str]
+    outcome_values: dict[str, dict[str, Any]]
     rules: tuple[dict[str, Any], ...]
     exceptions: tuple[dict[str, Any], ...]
     fallback: str | None
@@ -108,6 +114,7 @@ def evaluate(
     supported_extensions: Iterable[str] = (),
     *,
     enable_rfc0008: bool = False,
+    enable_rfc0016: bool = False,
     evaluation_work_limit: int = DEFAULT_EVALUATION_WORK_LIMIT,
 ) -> dict[str, Any]:
     """Evaluate one admitted input set and return only its portable disposition.
@@ -116,15 +123,20 @@ def evaluate(
     explicitly true. Every failure raises an EvaluationError carrying exactly
     one Core class and a preflight/evaluation phase; errors are never returned
     as dispositions.
+
+    ``enable_rfc0016=True`` admits and supports the draft outcome-values
+    extension. It is disabled by default and makes no conformance claim.
     """
 
     if not isinstance(enable_rfc0008, bool):
         raise EvaluationInputError("enable_rfc0008 must be a Boolean")
+    if not isinstance(enable_rfc0016, bool):
+        raise EvaluationInputError("enable_rfc0016 must be a Boolean")
 
     # Core §8.2 fixes this admission order. Pack normalization and semantic
     # validation are deliberately completed before touching the facts input.
     normalized_pack, view = _admit_pack(
-        pack, enable_rfc0008=enable_rfc0008
+        pack, enable_rfc0008=enable_rfc0008, enable_rfc0016=enable_rfc0016
     )
 
     normalized_facts = normalize_json(facts, source="facts")
@@ -133,6 +145,8 @@ def evaluate(
     )
     evidence_states = _prepare_evidence(normalized_evidence, view.requirement_ids)
     supported = _normalize_supported_extensions(supported_extensions)
+    if enable_rfc0016:
+        supported = supported | {OUTCOME_VALUES_EXTENSION}
     unsupported = view.required_extensions - supported
     if unsupported:
         raise UnsupportedExtensionError(
@@ -218,7 +232,7 @@ def evaluate(
             direct_escalation=direct_escalation,
         )
     if len(forced_outcomes) == 1:
-        return _make_disposition("outcome", outcome_id=next(iter(forced_outcomes)))
+        return _resolve_outcome(next(iter(forced_outcomes)), view, normalized_facts, budget)
 
     candidate_outcomes: set[str] = set()
     rule_reasons: set[str] = set()
@@ -244,16 +258,30 @@ def evaluate(
             "unresolved", reasons=rule_reasons, escalation=view.escalation
         )
     if len(candidate_outcomes) == 1:
-        return _make_disposition("outcome", outcome_id=next(iter(candidate_outcomes)))
+        return _resolve_outcome(next(iter(candidate_outcomes)), view, normalized_facts, budget)
     if view.fallback is not None:
-        return _make_disposition("outcome", outcome_id=view.fallback)
+        return _resolve_outcome(view.fallback, view, normalized_facts, budget)
     return _make_disposition(
         "unresolved", reasons={"no-match"}, escalation=view.escalation
     )
 
 
+def _resolve_outcome(
+    outcome_id: str, view: _PackView, facts: Any, budget: EvaluationBudget
+) -> dict[str, Any]:
+    disposition = _make_disposition("outcome", outcome_id=outcome_id)
+    if outcome_id in view.outcome_values:
+        values = resolve_values(view.outcome_values[outcome_id], facts, budget)
+        if values is None:
+            return _make_disposition(
+                "unresolved", reasons={"unknown"}, escalation=view.escalation
+            )
+        disposition["value"] = values
+    return disposition
+
+
 def _admit_pack(
-    pack: Any, *, enable_rfc0008: bool
+    pack: Any, *, enable_rfc0008: bool, enable_rfc0016: bool = False
 ) -> tuple[Any, _PackView]:
     """Normalize and validate only the pack stage of §8.2 preflight."""
 
@@ -262,6 +290,7 @@ def _admit_pack(
         return normalized_pack, _prepare_pack(
             normalized_pack,
             enable_rfc0008=enable_rfc0008,
+            enable_rfc0016=enable_rfc0016,
         )
     except PackNotConformantError:
         raise
@@ -273,6 +302,7 @@ def _prepare_pack(
     pack: Any,
     *,
     enable_rfc0008: bool,
+    enable_rfc0016: bool = False,
 ) -> _PackView:
     _validate_object(
         pack,
@@ -303,6 +333,7 @@ def _prepare_pack(
     if not isinstance(outcomes_raw, list) or len(outcomes_raw) < 2:
         raise EvaluationInputError("pack outcomes must be an array with at least two items")
     outcomes: set[str] = set()
+    outcome_values: dict[str, dict[str, Any]] = {}
     for index, outcome in enumerate(outcomes_raw):
         _validate_object(
             outcome,
@@ -323,7 +354,12 @@ def _prepare_pack(
                 outcome["extensions"],
                 f"outcome {outcome_id!r} extensions",
                 extension_values,
+                allow_outcome_values=enable_rfc0016,
             )
+            if enable_rfc0016 and OUTCOME_VALUES_EXTENSION in outcome["extensions"]:
+                declaration = outcome["extensions"][OUTCOME_VALUES_EXTENSION]
+                validate_value_declaration(declaration, f"outcome {outcome_id!r}")
+                outcome_values[outcome_id] = declaration
         outcomes.add(outcome_id)
 
     requirements_raw = pack.get("evidenceRequirements", [])
@@ -537,7 +573,13 @@ def _prepare_pack(
     escalation = _validate_escalation(pack.get("escalation"), extension_values)
     if "metadata" in pack and pack["metadata"] is None:
         raise EvaluationInputError("metadata must be an object when present")
-    required_extensions = _validate_metadata(pack.get("metadata"), extension_values)
+    required_extensions = _validate_metadata(
+        pack.get("metadata"), extension_values, enable_rfc0016=enable_rfc0016
+    )
+    if outcome_values and OUTCOME_VALUES_EXTENSION not in required_extensions:
+        raise EvaluationInputError(
+            f"{OUTCOME_VALUES_EXTENSION} must be listed in metadata.requiredExtensions"
+        )
     missing_values = required_extensions - extension_values
     if missing_values:
         raise EvaluationInputError(
@@ -550,6 +592,7 @@ def _prepare_pack(
         requirements=tuple(requirements),
         requirement_ids=frozenset(requirement_ids),
         outcomes=frozenset(outcomes),
+        outcome_values=outcome_values,
         rules=tuple(rules),
         exceptions=tuple(exceptions),
         fallback=fallback,
@@ -557,6 +600,7 @@ def _prepare_pack(
         required_extensions=required_extensions,
         evaluation_collection_items=(
             len(requirements) + len(outcomes) + len(rules) + len(exceptions)
+            + sum(len(declaration) for declaration in outcome_values.values())
         ),
     )
 
@@ -608,11 +652,14 @@ def _validate_absolute_uri(value: Any, description: str) -> None:
 
 
 def _validate_extensions(
-    value: Any, description: str, found: set[str]
+    value: Any, description: str, found: set[str], *, allow_outcome_values: bool = False
 ) -> None:
     if not isinstance(value, dict):
         raise EvaluationInputError(f"{description} must be an object")
     for name in value:
+        if allow_outcome_values and name == OUTCOME_VALUES_EXTENSION:
+            found.add(name)
+            continue
         if _EXTENSION_RE.fullmatch(name) is None:
             raise EvaluationInputError(
                 f"{description} has invalid extension name {name!r}"
@@ -922,7 +969,7 @@ def _validate_escalation(
 
 
 def _validate_metadata(
-    value: Any, extension_values: set[str]
+    value: Any, extension_values: set[str], *, enable_rfc0016: bool = False
 ) -> frozenset[str]:
     if value is None:
         return frozenset()
@@ -957,7 +1004,10 @@ def _validate_metadata(
     if (
         not isinstance(required, list)
         or any(
-            not isinstance(name, str) or _EXTENSION_RE.fullmatch(name) is None
+            not isinstance(name, str) or (
+                _EXTENSION_RE.fullmatch(name) is None
+                and not (enable_rfc0016 and name == OUTCOME_VALUES_EXTENSION)
+            )
             for name in required
         )
         or len(set(required)) != len(required)
