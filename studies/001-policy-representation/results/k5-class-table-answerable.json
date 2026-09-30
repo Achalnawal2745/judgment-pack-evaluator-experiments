@@ -1,0 +1,113 @@
+{
+  "conditions": {
+    "A::codex::gpt-5.6-sol": {
+      "accuracy": 0.7805555555555554,
+      "trials": 1080,
+      "trials_by_gold_and_decision": {
+        "cannot_decide": {
+          "cannot_decide": 0,
+          "illegal": 0,
+          "legal": 0,
+          "no_decision": 0
+        },
+        "illegal": {
+          "cannot_decide": 9,
+          "illegal": 773,
+          "legal": 113,
+          "no_decision": 0
+        },
+        "legal": {
+          "cannot_decide": 3,
+          "illegal": 112,
+          "legal": 70,
+          "no_decision": 0
+        }
+      },
+      "trials_correct": 843
+    },
+    "Aprime::codex::gpt-5.6-sol": {
+      "accuracy": 0.7777777777777778,
+      "trials": 1080,
+      "trials_by_gold_and_decision": {
+        "cannot_decide": {
+          "cannot_decide": 0,
+          "illegal": 0,
+          "legal": 0,
+          "no_decision": 0
+        },
+        "illegal": {
+          "cannot_decide": 36,
+          "illegal": 790,
+          "legal": 69,
+          "no_decision": 0
+        },
+        "legal": {
+          "cannot_decide": 15,
+          "illegal": 120,
+          "legal": 50,
+          "no_decision": 0
+        }
+      },
+      "trials_correct": 840
+    },
+    "B::mock::judgment-pack-runtime": {
+      "accuracy": 0.5787037037037037,
+      "trials": 1080,
+      "trials_by_gold_and_decision": {
+        "cannot_decide": {
+          "cannot_decide": 0,
+          "illegal": 0,
+          "legal": 0,
+          "no_decision": 0
+        },
+        "illegal": {
+          "cannot_decide": 255,
+          "illegal": 575,
+          "legal": 65,
+          "no_decision": 0
+        },
+        "legal": {
+          "cannot_decide": 45,
+          "illegal": 90,
+          "legal": 50,
+          "no_decision": 0
+        }
+      },
+      "trials_correct": 625
+    }
+  },
+  "constant_answer": {
+    "cannot_decide": {
+      "accuracy": 0.0,
+      "instances_correct": 0,
+      "pass_at_k": 0.0
+    },
+    "illegal": {
+      "accuracy": 0.8287037037037037,
+      "instances_correct": 179,
+      "pass_at_k": 0.8287037037037037
+    },
+    "legal": {
+      "accuracy": 0.1712962962962963,
+      "instances_correct": 37,
+      "pass_at_k": 0.1712962962962963
+    }
+  },
+  "gold_instances": {
+    "cannot_decide": 0,
+    "illegal": 179,
+    "legal": 37
+  },
+  "gold_trials": {
+    "cannot_decide": 0,
+    "illegal": 895,
+    "legal": 185
+  },
+  "paired_instances": 216,
+  "population": "answerable",
+  "schema": "jps-study-001-class-table/1",
+  "trials_per_instance": {
+    "max": 5,
+    "min": 5
+  }
+}

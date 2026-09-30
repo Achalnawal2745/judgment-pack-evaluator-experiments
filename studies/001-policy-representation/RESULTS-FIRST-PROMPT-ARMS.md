@@ -106,6 +106,69 @@ worse on the benchmark's actual labels. The +0.100 reported earlier is
 reproducible only after adding author-constructed abstention labels for
 the redacted half.
 
+### Added 2026-09-30: what a constant answer scores, and each arm by gold class
+
+**Secondary, post hoc and descriptive: nothing in this subsection is
+registered.** The preregistration names no constant-answer baseline and no
+per-class breakdown. Both were computed after the results were read, from
+the rows already retained, and change no figure above (`DEVIATIONS.md` §9).
+
+The gold labels on the registered population are unbalanced: 179 of the
+216 answerable instances are `illegal` and 37 are `legal`. An arm that
+answered `illegal` every time would be right on 179 of them, and because a
+constant answer is the same on every trial its pass^5 equals its accuracy:
+
+| | Accuracy | pass^5 |
+| --- | ---: | ---: |
+| Always `illegal` | **0.829** | **0.829** |
+| A — policy text in the prompt | 0.781 | 0.727 |
+| A′ — pack prose in the prompt | 0.778 | 0.778 |
+| B — pack through the evaluator | 0.579 | 0.579 |
+
+**Every arm's point estimate is below the constant answer on both
+measures.** So neither figure shows, on this population, that an arm applies
+the policy better than answering `illegal` every time would. The registered
+contrasts are differences between arms and are unaffected.
+
+How far below is not tested here. The published 95% intervals for accuracy
+reach 0.829 for A ([0.725, 0.833]) and for A′ ([0.718, 0.833]) and do not for
+B ([0.509, 0.644]); for pass^5 the interval reaches it for A′ only. Those
+intervals describe each arm alone. A comparison with the baseline would
+resample the two together, and none is reported: the baseline is a property
+of the 216 gold labels, stated as a count, with no interval of its own.
+
+What each arm did on each gold class, in trials (k = 5: 895 trials on the
+gold-`illegal` instances, 185 on the gold-`legal` ones):
+
+| Arm | Gold | got `illegal` | got `legal` | got `cannot_decide` |
+| --- | --- | ---: | ---: | ---: |
+| A | `illegal` | 773 | 113 | 9 |
+| A | `legal` | 112 | 70 | 3 |
+| A′ | `illegal` | 790 | 69 | 36 |
+| A′ | `legal` | 120 | 50 | 15 |
+| B | `illegal` | 575 | 65 | 255 |
+| B | `legal` | 90 | 50 | 45 |
+
+Read across:
+
+- **Gold `illegal`, answered `legal`:** A 113 of 895 (12.6%), A′ 69 (7.7%),
+  B 65 (7.3%).
+- **Gold `legal`, answered `illegal`:** A 112 of 185 (60.5%), A′ 120
+  (64.9%), B 90 (48.6%).
+- **Gold `legal`, answered `legal`:** A 70 of 185 (37.8%), A′ 50 (27.0%),
+  B 50 (27.0%). No arm gets the smaller class right on as many as two
+  trials in five.
+
+Every trial parsed to one of the three decisions, so each row sums to its
+class's trials. Arm B's rows are five times the per-instance table in
+`PIPELINE-STATUS.md` §6.3 (115 / 13 / 51 and 18 / 10 / 9), and its
+`cannot_decide` column is the 300 false escalations reported below.
+
+The tables are `results/k5-class-table-answerable.{json,md}`, written by
+`harness/class_table.py` over the same instances and rows as
+`results/k5-report-answerable.{json,md}`; the accuracy it derives from its
+own counts equals the scorer's for every arm.
+
 ## Why: the expressiveness gap, which is the real finding
 
 **Arm B returns `cannot_decide` on 60 of 216 answerable instances**
