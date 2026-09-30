@@ -9,6 +9,12 @@ A preregistered, three-arm experiment on a third-party benchmark.
 > the post-run adversarial review caught it (five blockers) and the error is recorded in
 > [`DEVIATIONS.md`](DEVIATIONS.md) §2 rather than silently fixed.
 >
+> A constant answer of `illegal` would score **0.829** on that population, above each arm's
+> accuracy: 179 of its 216 gold labels are `illegal`. That baseline and a per-class table are
+> secondary and descriptive: they were added after the run, are not registered, and test no arm
+> against it ([`RESULTS-FIRST-PROMPT-ARMS.md`](RESULTS-FIRST-PROMPT-ARMS.md),
+> [`DEVIATIONS.md`](DEVIATIONS.md) §9).
+>
 > H2 is **not estimable** on that set: it contains no redacted twin, so one row of the 2×2 is
 > empty. Arm B's shortfall is diagnosed as a missing constant rather than a missing rule — it
 > reaches 0.801 on the subset it can decide ([`G3-DIAGNOSIS.md`](G3-DIAGNOSIS.md),

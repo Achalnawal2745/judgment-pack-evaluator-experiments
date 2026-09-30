@@ -43,7 +43,7 @@ records; it remains the canonical matrix, with the external source each study bu
 
 | Study | Track | Status | Evidence |
 | --- | --- | --- | --- |
-| [001](studies/001-policy-representation/) | Expressiveness / efficacy | Prepared expressiveness result; comparison arms not yet run | [Results](#results-so-far), [study](studies/001-policy-representation/) |
+| [001](studies/001-policy-representation/) | Expressiveness / efficacy | Run — **H1 not supported: the pack arm scored lowest on the registered endpoint** (one of the two registered model families ran); expressiveness result | [`RESULTS-FIRST-PROMPT-ARMS.md`](studies/001-policy-representation/RESULTS-FIRST-PROMPT-ARMS.md), [`DEVIATIONS.md`](studies/001-policy-representation/DEVIATIONS.md), [Results](#results-so-far) |
 | [002](studies/002-qualitative-policy/) | Expressiveness | Completed expressiveness result | [Results](#results-so-far), [study](studies/002-qualitative-policy/) |
 | [003](studies/003-escape-census/) | Expressiveness | Completed escape census | [Results](#results-so-far), [study](studies/003-escape-census/) |
 | [004](studies/004-composition-closure/) | Composition | Completed composition-closure study; no efficacy claim | [`RESULTS.md`](studies/004-composition-closure/RESULTS.md), [`run-log.md`](studies/004-composition-closure/run-log.md) |
@@ -57,11 +57,11 @@ records; it remains the canonical matrix, with the external source each study bu
 | [012](studies/012-policy-perturbation/) | Blinded authorship | Frozen + run — **R1 unsupported; retracts a published claim** | [`ANALYSIS.md`](studies/012-policy-perturbation/ANALYSIS.md), [`CORRECTION.md`](studies/012-policy-perturbation/CORRECTION.md) |
 | [013](studies/013-agent-eval-forge-integration/) | Interoperability | Frozen + run — R1 holds (both strata) | [`ANALYSIS.md`](studies/013-agent-eval-forge-integration/ANALYSIS.md), [`results/`](studies/013-agent-eval-forge-integration/results/) |
 | [014](studies/014-openworkproof-binding/) | Interoperability | Frozen + run — R1 holds (both strata) | [`ANALYSIS.md`](studies/014-openworkproof-binding/ANALYSIS.md), [`results/`](studies/014-openworkproof-binding/results/) |
-| [015](studies/015-cloudflare-os-boundary/) | Interoperability | **Draft — five review rounds, not frozen** | [`PREREG-REVIEW.md`](studies/015-cloudflare-os-boundary/PREREG-REVIEW.md) |
+| [015](studies/015-cloudflare-os-boundary/) | Interoperability | Frozen + run — R1 holds (27 cells); reviewer holdout diverged on 7 of 8 cells | [`README.md`](studies/015-cloudflare-os-boundary/README.md), [`ANALYSIS.md`](studies/015-cloudflare-os-boundary/results/primary-attempt-001/ANALYSIS.md), [`results/`](studies/015-cloudflare-os-boundary/results/) |
 | [016](studies/016-policy-currency-anchor/) | Interoperability | Frozen + run — R1 holds (both strata) | [`ANALYSIS.md`](studies/016-policy-currency-anchor/ANALYSIS.md), [`results/`](studies/016-policy-currency-anchor/results/) |
 | [017](studies/017-witnessed-currency/) | Currency governance | Frozen + run — R1 holds (both strata) | [`ANALYSIS.md`](studies/017-witnessed-currency/ANALYSIS.md), [`results/`](studies/017-witnessed-currency/results/) |
 | [018](studies/018-transition-rules/) | Currency governance | Frozen + run — R1 holds; reviewer holdout diverged on three preregistered cells | [`ANALYSIS.md`](studies/018-transition-rules/ANALYSIS.md), [`results/`](studies/018-transition-rules/results/) |
-| [019](studies/019-authorship-across-representations/) | Blinded authorship | **Frozen + run — R1 inconclusive (control gate failed: E1 floor)** | [`PREREGISTRATION.md`](studies/019-authorship-across-representations/PREREGISTRATION.md) (draft), [`design/`](studies/019-authorship-across-representations/design/) |
+| [019](studies/019-authorship-across-representations/) | Blinded authorship | **Frozen + run — R1 inconclusive (control gate failed: E1 floor)** | [`ANALYSIS.md`](studies/019-authorship-across-representations/ANALYSIS.md), [`results/`](studies/019-authorship-across-representations/results/) |
 | [021](studies/021-history-replay-catch/) | History replay | Run — R1 holds (131/131, holdout 8/8) | [`PREREGISTRATION.md`](studies/021-history-replay-catch/PREREGISTRATION.md), [`PREREG-REVIEW.md`](studies/021-history-replay-catch/PREREG-REVIEW.md) |
 | [022](studies/022-outside-format-binding/) | Outside-format binding | Run — R1 holds (19/19, holdout 6/6) | [`PREREGISTRATION.md`](studies/022-outside-format-binding/PREREGISTRATION.md), [`PREREG-REVIEW.md`](studies/022-outside-format-binding/PREREG-REVIEW.md) |
 
@@ -89,8 +89,21 @@ its own qualifications.
 
 ### Efficacy track
 
-Later studies have retained results; each answers a different preregistered question and must be read with its study-level qualifications. On the expressiveness arms below, no comparison arm has been run in either study. Two **expressiveness**
-results, on deliberately opposite policy types and by different model families:
+**Study 001's comparison has run, and on the preregistered endpoint the pack arm loses.** All
+three arms ran over the full corpus at k = 5, with one of the two registered model families. On
+the registered answerable population (216 instances) pass^5 was A 0.727, A′ 0.778 and B 0.579:
+B − A = −0.148, 95% CI [−0.213, −0.088], the opposite sign to H1. H5 (B against A′) and H4
+(accuracy) are not supported either, and H3 (citation) fails. H2 (escalation) meets its registered
+rule over all 432 twins, with false escalations on 27.8% of answerable trials against arm A's 1.1%.
+The study traces the endpoint loss to 60 answerable instances the pack cannot decide, because the
+benchmark omits a schedule the policy needs. An earlier draft reported the opposite by scoring the
+wrong population.
+[`RESULTS-FIRST-PROMPT-ARMS.md`](studies/001-policy-representation/RESULTS-FIRST-PROMPT-ARMS.md)
+has the tables and [`DEVIATIONS.md`](studies/001-policy-representation/DEVIATIONS.md) the
+corrections.
+
+Later studies have retained results; each answers a different preregistered question and must be read with its study-level qualifications. Study 002 ran no comparison arm. The **expressiveness**
+results below are on deliberately opposite policy types and by different model families:
 
 | | Study 001 — CBA, arithmetic-dense | Study 002 — airline, qualitative | Study 003 — census, 12 decisions |
 | --- | ---: | ---: | ---: |
