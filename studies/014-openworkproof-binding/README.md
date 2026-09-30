@@ -1,6 +1,8 @@
 # Study 014 — decision-to-execution binding under an external receipt protocol
 
-**Status: FROZEN by the squash-merge of PR #49; nothing has run under the freeze.**
+**Status: FROZEN by the squash-merge of PR #49, and the registered primary attempt has run:
+`R1 holds`, and the reviewer holdout is concordant, 8 of 8** ([`ANALYSIS.md`](ANALYSIS.md),
+`results/primary-attempt-001`).
 Six pre-freeze cross-vendor review rounds closed with `freezable as written`
 (`PREREG-REVIEW.md`). Everything executed before the freeze is harness validation under
 `pilots/`, labeled as such, and supports no claim beyond "the machinery works". The

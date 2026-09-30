@@ -1,8 +1,11 @@
 # What 461 lines of regulatory text look like as a judgment pack
 
-**An expressiveness report from Study 001.** Not an efficacy claim: no comparison arm has been run,
-and nothing here says whether judgment packs help anyone. This reports only what happened when the
-format was pointed at real regulatory text and asked to carry it.
+**An expressiveness report from Study 001.** Not an efficacy claim: nothing here says whether
+judgment packs help anyone. This reports only what happened when the format was pointed at real
+regulatory text and asked to carry it. *(Update 2026-09-30: when this note was written no
+comparison arm had been run. All three arms have since run, and on the preregistered endpoint the
+pack arm loses; see [`RESULTS-FIRST-PROMPT-ARMS.md`](RESULTS-FIRST-PROMPT-ARMS.md). The sentence
+that previously stood here said "no comparison arm has been run" and is superseded.)*
 
 Everything below is reproducible from the pinned artifacts in this directory. The subject is the JPS
 `0.1.0-draft` format and the reference runtime's experimental evaluator (`judgment-pack` v0.2.0),
@@ -108,9 +111,10 @@ derived values and their attribution, and materiality.
   more time might encode more, though not the arithmetic — that boundary is structural.
 - **The 28 % undecidable figure is partly a corpus property**, not purely a format property: the
   missing salary schedule is absent from the benchmark, not from the CBA in the world.
-- **No efficacy claim.** Arms A and A′ have not been run. See
-  [PIPELINE-STATUS.md](PIPELINE-STATUS.md) for the full gap list, including two that would bias any
-  future comparison.
+- **No efficacy claim in this note.** When it was written, arms A and A′ had not been run, and
+  [PIPELINE-STATUS.md](PIPELINE-STATUS.md) listed the gaps, including two that would bias any
+  future comparison. *(Update 2026-09-30: both arms have since run; the comparison is reported in
+  [`RESULTS-FIRST-PROMPT-ARMS.md`](RESULTS-FIRST-PROMPT-ARMS.md).)*
 
 ## Reproducing
 

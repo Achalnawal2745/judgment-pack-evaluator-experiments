@@ -111,7 +111,10 @@ would withhold the prior finding entirely, and the next one should.
   call at a time) are not decisions a pack represents at all.
 - **n = 1 for the determination finding.** A single M2 entry supports "the boundary is not
   arithmetic-specific"; it does not measure how common the phenomenon is in qualitative policy.
-- **No efficacy claim.** As with Study 001, no comparison arm was run and none is implied.
+- **No efficacy claim.** No comparison arm was run in this study and none is implied. Study 001's
+  comparison arms have run since this was written; its
+  [`RESULTS-FIRST-PROMPT-ARMS.md`](../001-policy-representation/RESULTS-FIRST-PROMPT-ARMS.md)
+  reports them.
 - **The counting boundary is the author's.** `MIGRATION.md` states it explicitly and lists what was
   excluded and why, so the count can be audited or disputed.
 

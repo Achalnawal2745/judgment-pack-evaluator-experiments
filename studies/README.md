@@ -11,7 +11,7 @@ and agreement tracks are kept separate and why.
 
 | № | Question | Theme | External source | Status |
 | --- | --- | --- | --- | --- |
-| [001](001-policy-representation/) | Does representing a policy as a judgment pack change how reliably a model applies it? | Expressiveness / efficacy | RuleArena | Run — expressiveness result |
+| [001](001-policy-representation/) | Does representing a policy as a judgment pack change how reliably a model applies it? | Expressiveness / efficacy | RuleArena | Run — **H1 not supported: the pack arm scored lowest on the registered endpoint**; expressiveness result |
 | [002](002-qualitative-policy/) | Does the determination boundary reproduce on a *qualitative* policy? | Expressiveness | τ²-bench | Run — expressiveness result |
 | [003](003-escape-census/) | The escape census: across twelve real decisions, how often does judgment escape the pack? | Expressiveness | τ²-bench | Run — 12/12 decisions |
 | [004](004-composition-closure/) | Does declared composition close the census's cross-decision escape? | Composition | — | Run — negative: 0 of 5 closed |
@@ -34,7 +34,12 @@ and agreement tracks are kept separate and why.
 | [022](022-outside-format-binding/) | Can a gateway receipt be bound into an in-toto attestation so that a consumer of either format reads the other — and what does each of three verifiers (the gateway's own, a consumer ceremony over the unmodified in-toto reference implementation, the binding's rules) see of a tampered store or attestation, and what does none? | Outside-format binding | R1 holds: 19/19 locked cells, holdout 6/6; the ownership map in `ANALYSIS.md` — re-digest sees the bytes the binding names, nothing the gateway's key covers, and what makes an attestation about its receipt is the binding's rule | Run (nine review rounds; frozen at #106) |
 
 
-Study 012 is the only study here whose registered prediction **failed**. No longer
+Studies 001 and 012 each record a registered prediction that **failed**. In Study 001 the
+primary hypothesis is not supported, and the sign is the opposite of the one registered: on
+the registered answerable population the pack arm scored lowest of the three, in a run of
+one of the two registered model families. Its `RESULTS-FIRST-PROMPT-ARMS.md` gives the
+figures, the cause it diagnoses, and the earlier draft that reported the opposite by
+scoring the wrong population. In Study 012, no longer
 printing the thresholds changed nothing: the same six semantic classes were covered, and
 records still landed exactly on values the policy never spelled out. That kills the
 anchoring explanation Study 011 offered, which is retracted in 012's `CORRECTION.md` and
@@ -42,11 +47,15 @@ in a banner on Study 011's `DIVERSITY.md`. The pattern Study 011 reported is sti
 in the baseline as much as anywhere; only our account of its cause does not survive. That
 retraction was itself corrected the same day — the head of 012's `CORRECTION.md` lists
 what it got wrong, and why the largest error was claiming a universal our own published
-census already contradicted. Study 015 is merged as a **draft**:
-five consecutive cross-vendor review rounds
-each returned DO-NOT-FREEZE, every blocker they raised is closed, and the remaining open
-items are listed in its `PREREG-REVIEW.md`. It is registered evidence of a boundary and of
-a review process, not a frozen result, and nothing in it may be cited as one.
+census already contradicted. Study 015 is frozen and has run. Ten cross-vendor review
+rounds returned DO-NOT-FREEZE and the eleventh returned freezable after listed fixes; the
+freeze was taken on that verdict, and a twelfth round ran after it, which the study's
+`DEVIATIONS.md` records. R1 holds on all 27 locked cells, and the reviewer's holdout
+diverged on 7 of 8, classified cell by cell in the attempt's `ANALYSIS.md`.
+The README banners of Studies 016, 017 and 018 still say that nothing has run under the
+freeze. Each is pinned by its study's own freeze and cannot be edited
+([ADR 0004](../docs/adr/0004-keep-appendable-files-out-of-the-freeze-set.md)); the status
+column above and each study's `ANALYSIS.md` are current.
 "Frozen + run" marks the studies that passed a preregistration through
 cross-vendor adversarial review, froze it, and executed the registered primary attempt;
 each study's own `PREREGISTRATION.md`, `PREREG-REVIEW.md`, and results carry the detail
