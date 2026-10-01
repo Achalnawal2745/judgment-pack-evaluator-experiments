@@ -8,6 +8,10 @@ are held to their recorded digests, so a row's expectation cannot be edited in p
 import hashlib
 import json
 import os
+import stat
+import subprocess
+import sys
+import tempfile
 import unittest
 
 import error_class_agreement as driver
@@ -94,6 +98,81 @@ class VerdictTests(unittest.TestCase):
             "both implementations agree with each other and not with the row",
             driver.verdict("unsupported-required-extension", self.ERROR, self.ERROR),
         )
+
+
+class DriverEndToEndTests(unittest.TestCase):
+    def _run(self, go_output=GO_ERROR, py_output=PY_ERROR, expected="malformed-input",
+             suite_version=False):
+        with tempfile.TemporaryDirectory() as root:
+            harness = os.path.join(root, "harness")
+            staged = os.path.join(root, "reference", "conformance-evaluation-staged")
+            pyrepo = os.path.join(root, "python")
+            os.makedirs(harness)
+            os.makedirs(staged)
+            os.makedirs(os.path.join(pyrepo, "jps_evaluator"))
+            driver_path = os.path.join(harness, "error_class_agreement.py")
+            with open(driver.__file__, encoding="utf-8") as source, open(
+                driver_path, "w", encoding="utf-8"
+            ) as target:
+                target.write(source.read())
+            payload = {
+                "status": "staged",
+                "cases": [{
+                    "id": "row-1",
+                    "pack": "unused.json",
+                    "facts": {},
+                    "expectedErrorClass": expected,
+                }],
+            }
+            if suite_version:
+                payload["suiteVersion"] = "not-a-staged-file"
+            with open(os.path.join(staged, "cases.json"), "w", encoding="utf-8") as handle:
+                json.dump(payload, handle)
+
+            go_output_path = os.path.join(root, "go-output.txt")
+            with open(go_output_path, "w", encoding="utf-8") as handle:
+                handle.write(go_output)
+            gobin = os.path.join(root, "go-standin")
+            with open(gobin, "w", encoding="utf-8") as handle:
+                handle.write("#!/bin/sh\ncat " + repr(go_output_path) + "\n")
+            os.chmod(gobin, os.stat(gobin).st_mode | stat.S_IXUSR)
+
+            with open(os.path.join(pyrepo, "jps_evaluator", "__init__.py"), "w", encoding="utf-8"):
+                pass
+            with open(os.path.join(pyrepo, "jps_evaluator", "__main__.py"), "w", encoding="utf-8") as handle:
+                handle.write("import sys\nsys.stderr.write(" + repr(py_output) + ")\n")
+
+            return subprocess.run(
+                [sys.executable, driver_path, gobin, pyrepo],
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+
+    def test_driver_agreement_exits_zero(self):
+        result = self._run()
+        self.assertEqual(0, result.returncode, result.stderr)
+        self.assertIn("AGREE row-1", result.stdout)
+        self.assertIn("1/1 staged rows", result.stdout)
+
+    def test_driver_disposition_difference_exits_one(self):
+        result = self._run(go_output=DISPOSITION)
+        self.assertEqual(1, result.returncode)
+        self.assertIn("DIFF  row-1", result.stdout)
+        self.assertIn("go emitted a disposition", result.stdout)
+        self.assertIn("0/1 staged rows", result.stdout)
+
+    def test_driver_row_class_difference_exits_one(self):
+        result = self._run(expected="unsupported-required-extension")
+        self.assertEqual(1, result.returncode)
+        self.assertIn("DIFF  row-1", result.stdout)
+        self.assertIn("agree with each other and not with the row", result.stdout)
+
+    def test_driver_refuses_a_corpus(self):
+        result = self._run(suite_version=True)
+        self.assertNotEqual(0, result.returncode)
+        self.assertEqual("", result.stdout)
+        self.assertIn("refusing to treat a corpus as one", result.stderr)
 
 
 class VendoredRowsTests(unittest.TestCase):
